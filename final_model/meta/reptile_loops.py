@@ -230,6 +230,7 @@ def outer_loop_meta_update(
         avg_val_acc = metrics["val_accuracy"][-1]
         if config.SAVE_BEST_MODEL and avg_val_acc > best_acc:
             best_acc = avg_val_acc
+            os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
             torch.save(model.state_dict(), os.path.join(config.CHECKPOINT_DIR, ckpt_name))
 
         print(f"[Reptile*] Epoch {epoch+1}/{config.EPOCHS} | "

@@ -1,6 +1,7 @@
 # models/cnn_extractor.py
 import torch
 import torch.nn as nn
+import torchvision
 from config import config
 
 class CNNFeatureExtractor(nn.Module):
@@ -12,7 +13,7 @@ class CNNFeatureExtractor(nn.Module):
     def __init__(self, output_dim: int, num_qubits: int):
         super().__init__()
         # Load pretrained ResNet18
-        m = torch.hub.load('pytorch/vision:v0.10.0', 'resnet18', pretrained=True)
+        m = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1)
 
         # Small stem for 125x125
         m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)

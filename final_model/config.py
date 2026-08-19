@@ -72,6 +72,5 @@ class Config:
 
 
 config = Config()
-os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
 
 __all__ = ["Config", "config"]

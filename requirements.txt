@@ -1,0 +1,11 @@
+torch==2.13.0
+torchvision==0.28.0
+pennylane==0.45.0
+pennylane-lightning==0.45.0
+numpy==2.4.1
+pandas==2.3.3
+scikit-learn==1.8.0
+h5py==3.16.0
+matplotlib==3.10.8
+nbformat==5.10.4
+nbconvert==7.17.1

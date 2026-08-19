@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+final_model/data_higgs/
+final_model/results/
+final_model/*.hdf5
+*.tar.xz
