@@ -1,6 +1,12 @@
 __pycache__/
 *.pyc
 final_model/data_higgs/
-final_model/results/
+final_model/results/**/ckpt/
 final_model/*.hdf5
 *.tar.xz
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.bbl
+paper/*.blg

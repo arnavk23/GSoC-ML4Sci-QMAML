@@ -1,0 +1,84 @@
+{
+  "qmaml_existing": {
+    "meta_loss": [
+      0.7002702951431274
+    ],
+    "training_loss": [
+      0.7002702951431274
+    ],
+    "validation_loss": [
+      0.8923796117305756
+    ],
+    "gradient_norms": [
+      5.54821576870699
+    ],
+    "train_pvar": [
+      7.233754005984971e-05
+    ],
+    "val_pvar": [
+      3.0092222081279374e-05
+    ],
+    "train_accuracy": [
+      0.625
+    ],
+    "val_accuracy": [
+      0.4375
+    ],
+    "precision": [
+      0.4375
+    ],
+    "recall": [
+      1.0
+    ],
+    "f1_score": [
+      0.606060606060606
+    ],
+    "test_metrics": {
+      "accuracy": [],
+      "precision": [],
+      "recall": [],
+      "f1_score": []
+    }
+  },
+  "qmaml_paper": {
+    "meta_loss": [
+      0.7777014076709747
+    ],
+    "training_loss": [
+      0.7777014076709747
+    ],
+    "validation_loss": [
+      0.9600290954113007
+    ],
+    "gradient_norms": [
+      12.157164558107795
+    ],
+    "train_pvar": [
+      0.0
+    ],
+    "val_pvar": [
+      0.0
+    ],
+    "train_accuracy": [
+      0.5625
+    ],
+    "val_accuracy": [
+      0.4375
+    ],
+    "precision": [
+      0.4375
+    ],
+    "recall": [
+      1.0
+    ],
+    "f1_score": [
+      0.606060606060606
+    ],
+    "test_metrics": {
+      "accuracy": [],
+      "precision": [],
+      "recall": [],
+      "f1_score": []
+    }
+  }
+}

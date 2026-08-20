@@ -1,9 +1,9 @@
 """
-Heisenberg XYZ VQE task space, reproducing the exact setting from the Q-MAML
+Heisenberg XYZ VQE task space, matching the setting from the Q-MAML
 paper (Lee, Cho & Kim 2025, arXiv:2501.05906) Eq. 4 / "Heisenberg XYZ Hamiltonian"
-section -- used to validate our paper-faithful Q-MAML reimplementation
-(meta/qmaml_paper_loops.py) against the paper's own VQE setting before trusting
-its extension to HEP classification (research_notebooks/01_Higgs_*).
+section. Used to calibrate our paper-faithful Q-MAML system
+(meta/qmaml_paper_loops.py) against a known VQE setting before extending
+the algorithm to HEP classification (research_notebooks/01_Higgs_*).
 
 H_XYZ = -sum_{n=1}^{N-1} (Jx sx_n sx_{n+1} + Jy sy_n sy_{n+1} + Jz sz_n sz_{n+1} + h sz_n), h=0
 

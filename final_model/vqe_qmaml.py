@@ -1,9 +1,9 @@
 """
 Q-MAML Algorithm 1 (pre-training) / Algorithm 2 (adaptation) applied to the
-Heisenberg XYZ VQE task space (vqe_heisenberg.py) -- this reproduces the paper's
-OWN experimental setting (Lee, Cho & Kim 2025), as a correctness check on our
-reimplementation (meta/qmaml_paper_loops.py uses the same algorithm, applied
-instead to HEP classification in research_notebooks/01_Higgs_*).
+Heisenberg XYZ VQE task space (vqe_heisenberg.py). This matches the paper's own
+experimental setting (Lee, Cho & Kim 2025), used as a correctness check on our
+system -- meta/qmaml_paper_loops.py uses the same algorithm, applied
+instead to HEP classification in research_notebooks/01_Higgs_*.
 """
 import numpy as np
 import torch
