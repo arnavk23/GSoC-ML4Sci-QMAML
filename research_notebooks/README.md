@@ -87,7 +87,11 @@ Read in this order:
    mechanism is narrowed to "the Learner reliably lands in flat regions on this Hamiltonian family regardless
    of penalty strength" rather than confirmed as penalty-specific — an honest correction to the original
    diagnosis. The gauge-invariant Hamiltonian-variational ansatz comparison (structural rather than
-   penalty-enforced gauge invariance) is now the most promising untried follow-up.
+   penalty-enforced gauge invariance) is now the most promising untried follow-up. **3-seed replication
+   (Section 6) confirms the negative result is robust, not a single-seed fluke**: `qmaml` mean 49.38%
+   (std 13.70%, per-seed 59.16%/30.01%/58.96%) vs. `uniform` 20.34%/`gaussian` 19.43%/`pi` 27.35% (all with
+   much tighter std, 3-5%) — `qmaml`'s *best* seed is still worse than every classical scheme's *worst* seed,
+   so the ranking holds seed-by-seed, though the exact severity of the gap varies considerably with seed.
 10. **`09_Scalar_Field_QMAML.ipynb`** — Track C: phi^4 lattice scalar field theory (6 qubits, `N_SITES=2`,
     task space `(m0_sq, lambda0)`), the first bosonic Hamiltonian in this project — no gauge field, no
     fermion encoding, and (unlike Tracks A/B) H is a dense field-amplitude-basis matrix measured via
@@ -113,7 +117,168 @@ Read in this order:
     the symmetric→broken direction — a Learner trained only on one phase is miscalibrated, not just
     unhelpful, for a qualitatively different regime it never saw. This qualifies the project's broader
     "qmaml is the only consistently competitive scheme" claim: true for interpolation, not established for
-    extrapolation across a genuine phase transition.
+    extrapolation across a genuine phase transition. **3-seed replication of the interpolation-split result
+    (Section 6) confirms both headline findings robustly**: `qmaml` 6.05%±1.60%, `zero` 6.12%±1.54% —
+    essentially tied at every seed, confirming `zero` genuinely isn't stuck — while `uniform`/`gaussian` sit
+    in the same tight ~6-7% cluster and `pi` is a robust, seed-independent outlier at 27.00%±9.09% (even its
+    best seed, 14.58%, is ~2x worse than every other scheme's worst seed).
+
+11. **`10_QuarkGluon_QMAML.ipynb`** — generalization check for the classification-domain headline result
+    (notebook 01b) on a second, physically distinct dataset: quark/gluon jet tagging (jet-substructure
+    features, 6 qubits, 2 seeds, 4 variants). **`qmaml_paper` beats every classical scheme by a wide
+    margin**: val accuracy 0.776±0.005 vs. 0.594-0.599 for zero/uniform/gaussian (all three clustered
+    together, no distinctive `zero`-init behavior here — unlike the VQE-domain fixed-point pattern,
+    consistent with the same absence on HIGGS). Meta-loss drops from 0.62 to 0.31 for `qmaml_paper` while
+    every classical scheme stays pinned within 0.01 of ln 2 (chance-level) for the full 10 epochs. Gradient
+    norm again tracks accuracy, not "moderate is best" (1.452 vs. 0.096-0.205, same wrinkle as HIGGS). Only
+    2 seeds (effect size ~6.8 in raw terms, but not a powered significance test) — read as directional
+    confirmation that the HIGGS result generalizes, not a sharper result than HIGGS's own 4-seed numbers.
+    One reproducibility oddity, not a scientific finding: the `gaussian`/seed-1 run took ~11.8 hours in this
+    session's execution vs. ~7 minutes for `qmaml_paper` at the same settings, a large seed-specific
+    slowdown in the classical-baseline inner-loop path not seen at seed 0 — flagged for follow-up, not
+    investigated further here.
+12. **`11_SUSY_QM_QMAML.ipynb`** — Track F: supersymmetric quantum mechanics (4 qubits: 3 boson + 1
+    fermion, cutoff Λ=8), task space (superpotential ∈ {HO, AHO, DW}, m, g, μ) — the first track with a
+    *discrete* task label (which superpotential) alongside continuous coefficients, encoded as a one-hot +
+    (m,g,μ) 6-vector. Construction verified: Hermiticity for all three superpotentials; the harmonic-
+    oscillator boson block reproduces the analytic n+1/2 spectrum; the double-well superpotential's
+    classical potential genuinely has two minima (the source paper's rendered equation lost a sign in
+    extraction — verified directly with the sign that produces an actual double well, not assumed).
+    **`qmaml` wins cleanly**: best starting point (log-gap -2.202 vs. 0.622-3.150 for classical schemes)
+    and best final value (-4.867 vs. -4.663 to -4.752 for uniform/gaussian, its closest competitors). The
+    source paper's own hand-picked basis-state initialization (`basis_paper`) is *not* competitive — worst
+    starting point of all six schemes, only partial recovery over 200 iterations, a genuine negative result
+    for "physics-derived point-estimate init beats generic random init." `zero`-init drifts slowly rather
+    than staying exactly flat, unlike the *exact* fixed point on every Pauli-sum Hamiltonian tested
+    (Heisenberg, molecule, Schwinger, Z2 LGT) — and unlike Track C's Hermitian-matrix scalar field, where
+    `zero` wasn't stuck at all. Since SUSY QM and the scalar field are both Hermitian-matrix Hamiltonians
+    with opposite `zero`-init behavior, whether this fixed point occurs is not simply a function of
+    Pauli-sum vs. Hermitian-matrix Hamiltonians, narrowing that claim further. Per-superpotential
+    breakdown: `qmaml`'s clearest margin is on the double well, the source paper's own hardest case
+    (-5.09 vs. -1.06 to -4.58 for classical schemes); on the anharmonic oscillator, `qmaml`/`uniform`/
+    `gaussian` converge to a near-identical final value, consistent with this project's repeated
+    "different inits, same final answer, different speed" pattern rather than a permanent-optimum
+    advantage there. **Metric caveat surfaced explicitly**: SUSY ground states have exact energy 0 when
+    supersymmetry is unbroken (confirmed for the HO case, `E0=0.0000` at every HO test task), which makes
+    this project's usual mean-normalized relative-error percentage explode into meaningless values here —
+    log-gap is the metric to read for this track.
+
+13. **`12_SU2_LGT_QMAML.ipynb`** — Track D: SU(2) lattice gauge theory with dynamical matter (Atas, Zohar
+    et al., Nature Communications 2021), N=2 (4 qubits, un-reduced Hamiltonian — does not reproduce the
+    paper's own qubit-reduction trick or hadron-mass-ratio calculation, see the notebook's scope note),
+    task space (m̃, x) — the most directly "LHC-relevant" physics of any track (the source paper computes
+    actual meson/baryon mass ratios). Hamiltonian transcribed directly from the paper's Eqs. 3-6;
+    Hermiticity-verified at N=2 and N=3, and the trickiest term (a 4-body color-exchange piece) separately
+    cross-checked against an independent dense sigma+/sigma- matrix construction. **The cleanest result in
+    this project so far, stronger even than Track A's L=2 case**: `qmaml` reaches the float64
+    machine-precision floor (log-gap -17.411, ~0.00% relative error, matching the H2 molecule VQE
+    calibration's own floor) while every classical scheme plateaus around log-gap -10 to -11 (0.02-0.04%
+    error, visibly still noisy, not still descending). `zero`-init is an exact fixed point, matching every
+    other Pauli-sum Hamiltonian in this project. This confirms a mechanistic prediction made before running
+    the notebook: structurally this Hamiltonian is closer to Track A (gauge eliminated analytically, no
+    penalty term) than Track B (gauge invariance penalty-enforced), and the result matches Track A's
+    clean-win pattern rather than Track B's failure — a second, independent (non-Abelian) gauge theory with
+    gauge eliminated analytically again favoring `qmaml` cleanly, strengthening the project's existing
+    "penalty-enforced gauge invariance, not gauge theories generically, is what qmaml struggles with"
+    hypothesis.
+
+14. **`13_Neutrino_QMAML.ipynb`** — Track E: collective (all-to-all) neutrino oscillations, N=4 neutrinos
+    (4 qubits), task space (mixing angle θ, interaction strength μ). **Required a genuine reformulation,
+    stated explicitly rather than glossed over**: the track's literature precedent (arXiv:2102.12556)
+    studies real-time entanglement dynamics from a flavor eigenstate, not a ground-state problem, so this
+    notebook asks a different (though physically motivated — the adiabatic/spectral-split literature on
+    collective oscillations treats this Hamiltonian's ground state as physically meaningful) question:
+    does `qmaml` help a VQE find this Hamiltonian's ground state. Construction verified against two exact
+    limits, not assumed: at μ=0 the ground energy must equal −N·ω/2 for any mixing angle (confirmed to
+    ~1e-16); at θ=0,μ=0 the ground state must be exactly |11...1⟩ (confirmed, overlap 1.000000). **`qmaml`
+    wins clearly — the fourth clean win of five Hamiltonians tested** (final log-gap −14.346 vs. −9.0 to
+    −11.4 for classical schemes), though unlike Tracks A/D none of the five schemes have converged by
+    iteration 200 — a still-open speed gap, closer to the Heisenberg/molecule pattern than Track A/D's
+    permanently-separated curves. **`zero`-init is *not* an exact fixed point here**, unlike every other
+    Pauli-sum Hamiltonian tested in this project (Heisenberg, molecule, Schwinger, Z2 LGT, SU(2) LGT) — a
+    second, independent data point (after Track F's SUSY QM) against the hypothesis that the fixed point
+    tracks Pauli-sum-vs-Hermitian-matrix Hamiltonian type, since this Hamiltonian *is* a Pauli sum. Leading
+    hypothesis (untested directly): every other Pauli-sum Hamiltonian here has a purely-Z diagonal/mass
+    term, while this one mixes Z and X in its single-particle term whenever θ≠0. This is also the project's
+    first genuinely non-local (all-to-all, no lattice structure) Hamiltonian, and locality does not appear
+    to be the deciding factor for either the `qmaml` win or the `zero`-fixed-point question, at least on
+    this one data point.
+
+15. **`14_D8_LGT_QMAML.ipynb`** — Track G: non-Abelian D8 (dihedral group of order 8) lattice gauge
+    theory (Gaz, Popov, Pardo, Lewenstein, Hauke & Zohar, arXiv:2501.17863), the one track this project's
+    own tracks document flagged "not recommended for now" (qudit hardware, ansatz not clearly specified).
+    That flag was checked, not assumed: the paper's own qubit-reduced ("matter removal") Hamiltonian, the
+    version they actually run on trapped-ion qudits, could not be extracted with full confidence (several
+    intermediate equations for their smallest N=4 example were only partially recoverable). This notebook
+    instead implements the paper's ORIGINAL, fully-specified Hamiltonian (their Eqs. 1-24) directly with
+    explicit Jordan-Wigner fermionic matter, N=2 (1 link, 7 qubits), trading qubit count for full
+    verifiability. **Six construction checks, the most of any track**, including an independent
+    representation-theory check (D²(g₁)D²(g₂)=D²(g₁·g₂) for all 64 element pairs) that **caught and fixed a
+    real bug** (a matrix-multiplication order error producing the reversed group action) before the
+    notebook was first run — the kind of error that produces a Hermitian, plausible-looking, but physically
+    wrong Hamiltonian, and exactly why that check was included. **`qmaml` wins**, though more modestly than
+    most tracks: final log-gap -1.246 (10.49% error) vs. gaussian -1.202 (10.97%) and uniform -1.123
+    (11.86%) — a fairly tight cluster at the *final* value — with the clearer advantage in convergence
+    *speed* (flattens by iteration ~30-40 vs. ~75-100 for uniform/gaussian). `pi` plateaus early (-0.34);
+    `zero` is again an exact, unmoving fixed point despite this being a dense Hermitian-matrix Hamiltonian,
+    not a Pauli sum — a third distinct `zero`-init outcome among this project's Hermitian-matrix
+    Hamiltonians (no fixed point on the scalar field, a slow drift on SUSY QM, an exact fixed point here),
+    reinforcing that no clean Pauli-sum-vs-Hermitian-matrix rule explains this pattern across any track
+    tested. No plaquette term exists in a 1D chain at any N.
+
+16. **`15_Nuclear_EFT_QMAML.ipynb`** — Track H: light nuclei (deuteron/triton/helium-3) in lattice
+    pionless EFT (Cifci, Akkoyun & La Ronde, arXiv:2604.20908) — the best-precedented VQE-for-physics
+    track in this project (lineage of the 2018 IBM deuteron result). N_SITES=2 for all three nuclei (8
+    qubits: 4 proton + 4 neutron spin-orbitals). **First new ansatz family in this project**: a
+    particle-number-conserving UCCSD circuit (PennyLane's built-in `qml.UCCSD`), not
+    `StronglyEntanglingLayers` — proton and neutron excitations generated independently so no excitation
+    ever crosses species. Construction verified: Hermiticity; N_p and N_n each exactly commute with H
+    (no penalty term needed, unlike Track B's Gauss-law penalty, since particle number is a genuine
+    symmetry of this Hamiltonian). **Unplanned physics sanity check**: helium-3 came out less bound than
+    triton at matched couplings, matching the real experimental fact (driven by Coulomb repulsion between
+    He-3's two protons) — this fell out of the construction, it wasn't designed in. **Every scheme
+    converges to the identical final energy** (0.89% relative error, to 3 decimal places, for all six
+    schemes tested) — a first in this project; UCCSD's structure (2-4 variational amplitudes vs. 48 angles
+    for the generic ansatz) appears simple enough that init stops mattering for the final answer. The
+    advantage is entirely in convergence *shape*: `qmaml` descends smoothly from iteration 0, while every
+    classical scheme collapses onto one shared, strongly oscillatory trajectory (ringing for ~80
+    iterations) before damping into the same final value. `qmaml` also modestly beats the source paper's
+    own non-learned approach — a `warm_start_nearby` baseline (adapting from a converged nearby-task
+    solution, approximating their "warm-started from a nearby statevector-simulator solution") starts and
+    stays slightly behind `qmaml` throughout.
+17. **`16_Yukawa_QMAML.ipynb`** — Track I: scalar Yukawa coupling, single-site (Kaldenbach, Heller, Alber
+    & Stojanovic, arXiv:2211.02684), reformulated from the source paper's real-time-quench-dynamics
+    question into a ground-state VQE target — a simpler reformulation than Track E's, since the same
+    Hamiltonian (their Eqs. 6-7, quoted directly) already has a closed-form analytic cross-check available:
+    fixing the fermion sector to vacuum reduces H to a displaced harmonic oscillator with known ground
+    energy $E_0=-(\\eta/2)^2/m$. 4 qubits (2 fermion + 2 boson, Λ=4, matching the source paper's own "up to
+    three bosons" showcase scale). Verified: numeric ground energy approaches the analytic formula within
+    <1% at small $\\eta/2m$ (with the error's growth beyond that shown directly, not hidden); the ground
+    state's measured fermion occupation is exactly 0 (vacuum sector really is the global minimum).
+    **`qmaml` and `zero`-init tie for best**, both reaching the float64 precision floor (~0.00% error) —
+    a first in this project, since `zero` was an exact fixed point on every Pauli-sum Hamiltonian tested
+    and ranged from unstuck to slow-drift to exact-fixed-point on Hermitian-matrix ones elsewhere.
+    Mechanistic explanation, not just observation: the task range was deliberately narrowed to keep the
+    displacement small, so every ground state here is near-vacuum — and `zero`-init's circuit starts at
+    exactly $|0000\\rangle$, already close for small displacements, plausibly explaining both why `zero` is
+    competitive and why `qmaml` (trained on the same narrow task distribution) learns something similar.
+    `pi`-init is a clear loser again, as on Track C's scalar field (the two Hermitian-matrix Hamiltonians
+    where `pi` fails badly, despite strength on the Pauli-sum gauge-theory tracks).
+
+18. **`17_LMG_QMAML.ipynb`** — Track J: Lipkin-Meshkov-Glick model, flagged in this project's own tracks
+    document as nuclear-structure-adjacent rather than core HEP, included for completeness. Precisely
+    differentiated from Robin & Savage's "HL-VQE" (arXiv:2301.05976) — despite the similar name, HL-VQE
+    iteratively co-optimizes an *effective Hamiltonian* via orbital rotation, not a neural-network-learned
+    initialization; this notebook runs plain Q-MAML on their own un-rotated Hamiltonian (Eq. 1), $J=3/2$
+    (2 qubits, 4 states — matching their own smallest/showcase scale). Construction verified via the exact
+    su(2) algebra relations on the constructed generators and the analytically-known $V=0$ limit.
+    **Genuine null result, not a close call**: all five schemes (`zero`/`pi`/`uniform`/`qmaml`/`gaussian`)
+    reach the float64 precision floor, and the ranking among them is within run-to-run noise — the
+    convergence plot shows all five trajectories running together in one noisy bundle for the entire
+    150-iteration budget, never separating, unlike every other track in this project. Likely explanation:
+    4 states on 2 qubits may be too small a Hilbert space for a bad initialization to get meaningfully
+    stuck. The clear next step is a **larger $J$** (more qubits), not more seeds — this benchmark needs to
+    get harder before an initialization-scheme comparison here is informative.
 
 **Also attempted and honestly reported as not working**: combining Q-MAML with identity-block
 initialization (Grant et al. 2019) to directly counteract the barren-plateau collapse found in notebook 04.

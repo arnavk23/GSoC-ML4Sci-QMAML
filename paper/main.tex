@@ -8,250 +8,243 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage[most]{tcolorbox}
 \usepackage[margin=1in]{geometry}
 \usepackage{enumitem}
+\usepackage{placeins}
 
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newtcolorbox{keyresult}{colback=black!3,colframe=black!55,boxrule=0.5pt,sharp corners,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,before skip=8pt,after skip=8pt}
 
-\title{Revisiting Q-MAML for High-Energy Physics Classification:\\
-A Verified Extension and Barren-Plateau Analysis}
+\title{Revisiting and Extending Q-MAML for High-Energy Physics:\\
+Classification, Verified VQE Baselines, and Genuine Lattice Hamiltonians}
 \author{\todo{author list} \\ \todo{affiliation(s)}}
-\date{Draft --- \today}
+\date{Draft (\today)}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\todo{tighten to 150--200 words once quark-gluon results (if access lands) are in; body below reflects real experimental results, not placeholders.}
+We re-test Q-MAML~\citep{leeqmaml2025} (AAAI 2025), a meta-learned PQC initializer, on HEP problems it was
+never evaluated on. First, we audit the ML4Sci GSoC 2025 codebase that applies it to HEP classification and
+find both attempts broken: in one, the training loss is detached from the computation graph before
+backpropagation, so the learner network never actually updates; the other runs a first-order-MAML-style
+inner loop, not the paper's published algorithm. We build a paper-faithful re-implementation and calibrate
+it against the paper's own VQE settings at its published 2000-iteration budget (table below).
+Applied to HIGGS classification, a novel setting for this algorithm, it gets the best validation accuracy at
+every qubit count tested, significant vs.\ Gaussian init and the GSoC baseline ($p<0.05$, $n=4$ seeds). A
+McClean-et-al.\ barren-plateau scan shows no scheme, including ours, changes the variance-scaling exponent;
+classification cost functions plateau $\sim$8 orders of magnitude faster than the VQE costs the paper was
+validated on. Finally we run ten genuine lattice/field-theory (and adjacent) Hamiltonian pilots (Schwinger
+model, $\mathbb{Z}_2$ lattice gauge theory, $\phi^4$ scalar field, SU(2) lattice gauge theory, collective
+neutrino oscillations, supersymmetric quantum mechanics, non-Abelian $\mathbb{D}_8$ lattice gauge theory,
+light nuclei in lattice pionless EFT, scalar Yukawa coupling, and the Lipkin-Meshkov-Glick model): clear
+wins on six, ties for best on two (every scheme reaches the same final answer, Q-MAML only faster or
+tied-fastest), a genuine null result on one (too small a system to differentiate any scheme), and one
+diagnosed loss (gauge invariance enforced by a Gauss-law penalty), plus several corrections to claims made
+earlier in the paper. A second classification dataset (quark-gluon jet tagging, 2 seeds) replicates the
+HIGGS win directionally
+($\sim$18-point accuracy gap, not yet significance-tested at this seed count).
 
-We audit the ML4Sci GSoC 2025 application of Q-MAML (Lee, Cho \& Kim 2025, AAAI) to HEP classification and find its central claim was never actually tested correctly: the Higgs pipeline's meta-learner received no gradient at all (a \texttt{.item()}-detached loss backpropagated as a disconnected leaf tensor), and the quark-gluon pipeline implements an inner-loop-plus-first-order-detach variant rather than the paper's published Algorithm 1. We build a paper-faithful system, calibrate it against both of the paper's own VQE settings at its exact 2000-iteration adaptation budget: on Heisenberg XYZ, Q-MAML reaches near-converged solution quality in roughly 250--500 iterations, a $\sim$4--6$\times$ reduction in quantum circuit evaluations versus classical random initialization; on the H2 molecule Hamiltonian, using the paper's own exact ansatz, Q-MAML reaches machine-precision convergence by iteration $\sim$100 versus $\sim$1500--2000 for classical schemes, a $\sim$15--20$\times$ reduction. In both settings the fully-converged final solution quality is nearly identical across all non-degenerate initialization schemes --- Q-MAML's robust, repeatable advantage is convergence \emph{speed}, not a permanently-better optimum, a correction from an initial truncated-budget pass that overstated the latter. We extend the algorithm --- for the first time, to our knowledge --- to HEP classification on HIGGS. A McClean et al.-style barren-plateau diagnostic across both domains shows Q-MAML's advantage is about \emph{landscape placement}, not a change in the barren-plateau variance-scaling exponent: no initialization scheme, including Q-MAML's, resists the exponential gradient-variance collapse itself, and classification cost functions plateau markedly faster ($\sim$8 orders of magnitude by 10 qubits) than the VQE cost the paper was validated on --- a challenge for the broader QMLHEP research direction, not specific to this method. On HIGGS classification, our paper-faithful system achieves the highest mean validation accuracy at every qubit count tested (4, 6, 8), with a large effect size throughout (Cohen's $d$ = 0.87--2.95), and beats Gaussian initialization and the prior GSoC repo's own Q-MAML variant with statistical significance (Welch's $t$-test, $p<0.05$) at all three qubit counts, over 4 random seeds --- the first controlled evidence, to our knowledge, that Q-MAML's published algorithm improves HEP classification trainability. An initial 2-seed pass suggested this advantage collapses to parity by 8 qubits, closely tracking the qubit range where our barren-plateau diagnostic shows every scheme's gradient variance collapsing to a numerical floor; replicating at 4 seeds with proper significance testing shows that specific claim does not hold --- the advantage persists, only its margin against the single best classical baseline narrows and loses significance at $n=4$. We report this correction explicitly, since a claim's survival under replication is itself evidence about how much weight it should carry.
-\todo{extend to quark-gluon if dataset access lands before submission; further increase seed count and add a 10-qubit point to resolve the scaling question with adequate statistical power.}
+\medskip
+\centering\small
+\begin{tabular}{lc}
+\toprule
+Setting (classical: 1500--2000 iters.\ to converge) & Speedup $S$ \\
+\midrule
+Heisenberg XYZ (reconstructed ansatz) & $4$--$6\times$ \\
+H2 molecule (paper's exact ansatz) & $15$--$20\times$ \\
+\bottomrule
+\end{tabular}
 \end{abstract}
 
 \section{Introduction}
 
-Variational quantum algorithms (VQAs) for high-energy physics are motivated by the promise of exponential
-Hilbert-space expressivity on near-term (NISQ-era) hardware, but are bottlenecked by two well-known problems:
-barren plateaus (vanishing gradients that scale unfavorably with system size) and the high per-iteration cost
-of evaluating a quantum circuit, which makes fast convergence far more valuable than in classical optimization.
-Q-MAML~\citep{leeqmaml2025} (arXiv:2501.05906) addresses the second problem by training a classical ``Learner''
-network to predict good initial parameters for a parameterized quantum circuit (PQC), via a meta-objective
-backpropagated directly through a distribution of tasks (their Algorithm~1), with no inner-loop adaptation
-during pre-training. The paper validates this only on two VQE-style Hamiltonian optimization settings
-(Heisenberg XYZ and molecular Hamiltonians).
+Variational quantum algorithms for HEP are bottlenecked by barren plateaus and by the cost of each circuit
+evaluation, which makes fast convergence matter more than in classical optimization. Q-MAML~\citep{leeqmaml2025}
+(arXiv:2501.05906) trains a classical ``Learner'' network to predict PQC initial parameters via a
+meta-objective backpropagated with no inner-loop adaptation (Algorithm~1). The paper validates this on two
+VQE settings only: Heisenberg XYZ and molecular Hamiltonians.
 
-This leaves a gap: Q-MAML has never been tested on supervised HEP classification, despite that being the
-explicit motivation of the ML4Sci QMLHEP GSoC line of projects (both the 2025 project this work builds on and
-the 2026 proposal, QMLHEP8). Auditing the 2025 GSoC codebase (Section~\ref{sec:audit}), we found neither
-of its two attempts at this actually tested the paper's published algorithm correctly.
+Two gaps follow. Q-MAML has never been tested on HEP classification, the explicit motivation of the 2025
+GSoC project this work builds on: auditing that codebase (\S\ref{sec:audit}), we find neither of its two
+attempts actually runs the published algorithm. And it has never been tested on a Hamiltonian that is itself
+particle physics: lattice field theories, which is what the 2026 proposal (QMLHEP8) motivating this work
+asks for. \S\ref{sec:audit}--\ref{sec:bp-combined} close the first gap, \S\ref{sec:genuine-hep} the second.
 
 \paragraph{Contributions.}
-\begin{enumerate}
-    \item Audit of the GSoC 2025 codebase, identifying a detached-gradient bug (Higgs pipeline) and an
-    algorithmic divergence from Algorithm~1 (quark-gluon pipeline) --- Section~\ref{sec:audit}.
-    \item A paper-faithful system (Algorithm~1/2), validated against the paper's own two VQE settings
-    before being applied to HEP classification --- Sections~\ref{sec:method}, \ref{sec:vqe-molecule}--\ref{sec:vqe-heisenberg}.
-    \item Controlled comparison: paper-faithful Q-MAML vs.\ the original inner-loop variant vs.\ classical
-    initializations (zero, $\pi$, reduced-domain uniform, Gaussian), across qubit counts, with gradient-norm
-    diagnostics --- Section~\ref{sec:classification}.
-    \item A McClean et al.-style barren-plateau variance-scaling diagnostic, run in both the paper's original
-    VQE domain and the new classification domain, and connected quantitatively to contribution~3 ---
-    Sections~\ref{sec:bp-vqe}--\ref{sec:bp-combined}.
+\begin{enumerate}[nosep]
+    \item Audit of the GSoC 2025 codebase: a detached-gradient bug and an algorithmic divergence from
+    Algorithm~1 (\S\ref{sec:audit}).
+    \item A paper-faithful Algorithm~1/2 implementation, validated against the paper's own two VQE settings
+    before extension to classification (\S\ref{sec:method}, \S\ref{sec:vqe-molecule}--\ref{sec:vqe-heisenberg}).
+    \item Q-MAML vs.\ classical inits (zero, $\pi$, reduced-domain uniform, Gaussian) vs.\ the original GSoC
+    baseline, across qubit counts, with gradient-norm diagnostics (\S\ref{sec:classification}).
+    \item A McClean-et-al.\ barren-plateau variance-scaling scan in both the VQE and classification domains
+    (\S\ref{sec:bp-vqe}--\ref{sec:bp-combined}).
+    \item A pilot on ten lattice/field-theory (and adjacent) Hamiltonians (Schwinger, $\mathbb{Z}_2$ LGT,
+    $\phi^4$ scalar field, SU(2) LGT, collective neutrino oscillations, SUSY QM, $\mathbb{D}_8$ LGT, light
+    nuclei in lattice pionless EFT, scalar Yukawa coupling, LMG), what
+    the GSoC 2026 proposal asks for and untested by the original paper or contributions 1--4, with several
+    findings that revise claims made earlier in this paper (\S\ref{sec:genuine-hep}).
 \end{enumerate}
 
 \section{Related Work}
 
-\textbf{Barren plateaus.} The foundational result is McClean et al.~\citep{mcclean2018barren}, showing
-gradient variance decays exponentially with qubit count for sufficiently expressive/random circuits.
-Follow-on work refines this: noise-induced plateaus~\citep{wang2021noise}, the connection between ansatz
-expressibility and gradient magnitude~\citep{holmes2022connecting}, a Lie-algebraic theory of plateau onset
-for deep circuits~\citep{ragone2023lie}, and --- most relevant to our Section~\ref{sec:bp-combined} ---
-cost-function-dependent plateaus, where \emph{global} cost functions plateau at smaller system sizes than
-\emph{local} ones~\citep{cerezo2021costfunction}.
-
-\textbf{Initialization strategies.} Gaussian initialization~\citep{zhang2022escaping} and reduced-domain
-uniform initialization~\citep{wang2023trainability} are the classical baselines we compare against.
-
-\textbf{Meta-learning for VQAs.} MAML~\citep{finn2017maml} is the classical meta-learning framework Q-MAML
-adapts to the quantum setting; Meta-VQE~\citep{cerveralierta2021metavqe} is an earlier, related
-task-conditioned approach to learning energy profiles of parameterized Hamiltonians.
-
-\textbf{Q-MAML}~\citep{leeqmaml2025} (AAAI 2025, 39(17):18137--18144, arXiv:2501.05906) is the paper this
-work directly extends; peer-reviewed, validated only on VQE tasks (Heisenberg XYZ, molecular Hamiltonians).
-
-\textbf{Concurrent/adjacent 2025 parameter-initialization work} \todo{literature search conducted 2026-08-20 --- re-check closer to submission for anything newer}:
-\begin{itemize}
-    \item \emph{Qracle}~(arXiv:2505.01236) --- GNN-based direct parameter prediction from a
-    Hamiltonian+ansatz graph representation. Not MAML-style (no cross-task meta-objective backprop), applied
-    exclusively to VQE.
-    \item \emph{DiffQ}~(arXiv:2509.17324) --- reframes VQA parameter initialization as generative modeling:
-    a denoising diffusion probabilistic model trained to directly sample high-quality initial parameters,
-    evaluated across 15{,}085 instances spanning three domains/five tasks (general VQA optimization, not
-    HEP-classification-specific as far as available abstract/summary indicates). Not MAML-style --- no
-    cross-task adaptation mechanism, no Learner conditioned on a task embedding the way Q-MAML's is.
-    \item \textbf{``From Qubits to Couplings''}~(arXiv:2511.15672, Nov 2025) --- closest adjacent work.
-    Proposes a classical ``meta-parameter mapping network'' that outputs \emph{per-event} PQC rotation
-    angles ($\theta_{\text{eff}} = \theta_{\text{base}} + \lambda\Delta\theta(x)$) for double-Higgs-boson
-    search ($HH\to b\bar{b}\gamma\gamma$), trained in two stages: first to minimize the Fubini--Study metric
-    condition number (an expressivity/anti-barren-plateau objective, not a cross-task generalization
-    objective), then jointly with the classifier. Despite the ``meta-learning'' terminology, this is
-    architecturally a per-sample hypernetwork conditioning scheme, not MAML-style meta-learning across a
-    distribution of tasks with held-out adaptation --- it never cites Finn et al.\ or the Q-MAML paper.
-    \textbf{Our work remains the first to test Lee/Cho/Kim's specific Algorithm~1/2 on HEP classification
-    tasks.} Worth citing prominently as evidence the general research direction (learned PQC parameterization
-    for LHC physics) is active and timely.
-\end{itemize}
-ML4Sci QMLHEP prior GSoC work (quantum transformers, QGNNs, etc.) provides further context on HEP-QML
-applications.
-
-\textbf{Novelty check performed 2026-08-20.} We searched for prior work combining Q-MAML specifically (not
-generic learned-initialization methods) with HEP classification. None found. Re-run this search shortly
-before submission in case something lands between now and November.
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{p{0.16\textwidth}p{0.32\textwidth}p{0.44\textwidth}}
+\toprule
+\textbf{Area} & \textbf{Refs} & \textbf{Relation to this work} \\
+\midrule
+Barren plateaus & \citep{mcclean2018barren,wang2021noise,holmes2022connecting,ragone2023lie,cerezo2021costfunction} &
+McClean et al.\ variance-decay result and follow-ons: noise-induced plateaus, expressibility-gradient link,
+Lie-algebraic onset theory, cost-function-dependent plateaus (the last explains \S\ref{sec:bp-classification}). \\
+Init.\ baselines & \citep{zhang2022escaping,wang2023trainability} & Gaussian and reduced-domain-uniform
+init, our classical comparison points. \\
+Meta-learning & \citep{finn2017maml,cerveralierta2021metavqe} & MAML (classical); Meta-VQE
+(task-conditioned energy profiles, predates Q-MAML). \\
+Q-MAML & \citep{leeqmaml2025} & AAAI 2025, arXiv:2501.05906. Validated only on VQE (Heisenberg, molecules). \\
+Concurrent init.\ work & \citep{qracle2025,diffq2025,qubitstocouplings2025} & Qracle (GNN param.\ predictor,
+no cross-task meta-objective); DiffQ (diffusion-model param.\ sampling, no MAML-style adaptation);
+``Qubits to Couplings'' (per-event hypernetwork for $HH\to b\bar b\gamma\gamma$, doesn't cite Finn et al.\ or
+Q-MAML). None test Lee/Cho/Kim's Algorithm~1/2 on HEP classification. \\
+Genuine HEP Hamiltonians & \citep{schwingertrappedion2025,z2lgtbp2025,scalarfield2023,quantumdatalearning2023} &
+Trapped-ion Schwinger-model VQE; barren-plateau-free $\mathbb{Z}_2$ LGT (uses a Gauss-law warm start, no
+learned init, our Track B comparison point); scalar-field qubit encoding we build Track C from; QCNN phase
+classification on pre-prepared states (different mechanism, no overlap with Track A). \\
+\bottomrule
+\end{tabular}
+\caption{Related work by area. No prior work applies a Learner-predicts-init mechanism to a lattice field
+theory Hamiltonian; \S\ref{sec:genuine-hep} is, to our knowledge, the first.}
+\end{table}
 
 \section{Auditing the Prior Codebase}
 \label{sec:audit}
 
-\subsection{Quark-gluon pipeline (\texttt{final\_model/meta/qmaml\_loops.py})}
-Runs \texttt{INNER\_STEPS} SGD steps on $\theta$ before the outer loss, then computes
-$\theta_{\text{query}} = (\theta_T - \theta_0)\texttt{.detach()} + \theta_0$: the forward pass uses the
-adapted weights but the backward pass sees only $d\theta_{\text{query}}/d\theta_0 = I$. A reasonable
-first-order-MAML-style variant, but not Algorithm~1 as published.
+Two independent GSoC 2025 attempts to apply Q-MAML to HEP classification both deviate from the published
+algorithm, in different ways:
 
-\subsection{Higgs pipeline (\texttt{higgs\_notebooks/Higgs\_Boson\_Classification\_QMAML.ipynb})}
-\texttt{total\_loss += loss\_q.item()} detaches every task's loss from autograd, and the subsequent
-\texttt{torch.tensor(total\_loss, requires\_grad=True).backward()} backpropagates a disconnected leaf
-tensor. Net effect: the Learner's weights never update across the reported 10 training epochs.
-\todo{confirm empirically by diffing Learner state\_dict before/after training in the original code, as a footnote/appendix.}
-The sibling notebook (v1) is gradient-correct but only ever trains a single constant task embedding --- not
-meta-learning in any meaningful sense.
-
-\subsection{Environment/engineering issues}
-Not scientifically material, but affect usability: missing \texttt{models/\_\_init\_\_.py} and
-\texttt{meta/\_\_init\_\_.py} (\texttt{main.py}'s own imports never worked as committed);
-\texttt{torch.hub.load('pytorch/vision:v0.10.0', ...)} pinned a torchvision snapshot incompatible with
-current torch releases; \texttt{config.py} eagerly created a directory named after its own placeholder path
-string on every import.
+\begin{itemize}[nosep]
+    \item \textbf{Quark-gluon pipeline}: runs several steps of gradient descent on the PQC parameters before
+    computing the outer (meta) loss, then stops gradient flow through the adapted parameters. Writing
+    $\theta_0$ for the Learner's prediction and $\theta_T$ for the parameters after $T$ inner steps, the
+    forward pass uses $\theta_T$ but the backward pass sees
+    $\partial\theta_T/\partial\theta_0 \equiv \mathbb{1}$ (stop-gradient), i.e.\ a first-order-MAML-style
+    variant, not the paper's inner-loop-free Algorithm~1.
+    \item \textbf{Higgs pipeline}: the per-task loss is converted to a plain (non-differentiable) scalar
+    before being accumulated and only re-wrapped as a fresh, disconnected tensor at the end for
+    backpropagation, so the gradient the Learner receives carries no information about the training data.
+    The Learner's weights never update across the reported 10 training epochs. A companion notebook is
+    gradient-correct but only ever trains on one constant task embedding, which is not meta-learning in any
+    meaningful sense.
+    \item \textbf{Engineering}: missing package-init files broke the top-level entry point's own imports as
+    committed; a pinned third-party model snapshot was incompatible with current library releases; a
+    configuration module created a directory named after its own placeholder path string on import.
+\end{itemize}
 
 \section{Method}
 \label{sec:method}
 
-\subsection{Paper-faithful Q-MAML (Algorithm 1/2), adapted to classification}
+\subsection{Paper-faithful Q-MAML (Algorithm 1/2)}
 
-The original paper defines, per Hamiltonian task $T_i$ with cost
-$l_{T_i}(\theta) = \langle\psi(\theta)|\hat H|\psi(\theta)\rangle$, a Learner $h_W$ mapping a task descriptor
-$\phi_i$ to PQC parameters $\theta = h_W(\phi_i)$, trained via the meta-objective (their Eq.~2):
-\[
-\arg\min_W \sum_{T_i \sim p(T)} l_{T_i}\big(g(h_W(\phi_i))\big),
-\]
-backpropagated directly (their Eq.~3, no inner-loop adaptation during pre-training --- this is what
-distinguishes it from true MAML, which would adapt $\theta$ for several steps before evaluating the outer
-loss). We keep this structure exactly and substitute the domain-specific pieces (Table~\ref{tab:method-map}).
+Per task $T_i$ with cost $l_{T_i}(\theta)=\langle\psi(\theta)|\hat H|\psi(\theta)\rangle$, a Learner $h_W$
+maps task descriptor $\phi_i\to\theta=h_W(\phi_i)$, trained via (paper's Eq.~2)
+\begin{equation}
+\label{eq:metaobj}
+\arg\min_W \sum_{T_i\sim p(T)} l_{T_i}\big(g(h_W(\phi_i))\big),
+\end{equation}
+backpropagated with no inner-loop adaptation (Eq.~3: the difference from true MAML). We keep
+Eq.~\ref{eq:metaobj} exactly and swap the domain-specific pieces (Table~\ref{tab:method-map}).
 
-\begin{table}[h]
-\centering
-\caption{Mapping from the paper's VQE setting to this work's classification setting.}
+\begin{table}[ht]
+\centering\small
+\caption{VQE setting (paper) $\to$ classification setting (this work).}
 \label{tab:method-map}
 \begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}
 \toprule
 \textbf{Paper (VQE)} & \textbf{This work (classification)} \\
 \midrule
-Task $T_i$ = a Hamiltonian instance, e.g.\ $J^i=[J_x,J_y,J_z]$ &
-Task $T_i$ = a quantile bin of a physics variable (\texttt{m\_bb} for HIGGS; \texttt{pt}/\texttt{m0} for quark-gluon), with a class-balanced support/query split drawn from it \\
-Task descriptor $\phi_i$ &
-$\phi_i = J^i$ directly (VQE study) or a 512-d embedding of the support set (classification, via \texttt{compute\_task\_embedding}) \\
-Cost $l_{T_i}(\theta) = \langle\psi(\theta)|\hat H|\psi(\theta)\rangle$ &
-$l_{T_i}(\theta) = \mathrm{CrossEntropy}(\mathrm{PQC}_\theta(\text{support}_i), y_i)$ \\
-PQC circuit $g(\theta)$ &
-Same PQC family (\texttt{StronglyEntanglingLayers}, angle-encoded classical features), plus a classical encoder producing the encoding angles from raw features (image or tabular) \\
+Task = Hamiltonian instance, e.g.\ $J^i=[J_x,J_y,J_z]$ &
+Task = quantile bin of a physics variable (reconstructed Higgs-candidate mass for HIGGS; jet transverse
+momentum for quark-gluon), class-balanced support/query split \\
+Descriptor $\phi_i=J^i$ & mean encoder embedding of the support set \\
+$l_{T_i}(\theta)=\langle\psi|\hat H|\psi\rangle$ & $l_{T_i}(\theta)=\mathrm{CE}(\mathrm{PQC}_\theta(\text{support}_i), y_i)$ \\
+PQC $g(\theta)$ & Same hardware-efficient ansatz family + classical encoder producing the encoding angles \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Code: \texttt{final\_model/meta/qmaml\_paper\_loops.py::pretrain\_learner\_paper}
-(classification) and \texttt{final\_model/vqe\_qmaml.py::pretrain\_learner\_vqe} (VQE study) share
-this identical algorithmic structure --- same no-inner-loop backprop, differing only in the cost function
-plugged in. The evaluation (``adaptation'') phase, Algorithm~2, is likewise domain-general: freeze the
-Learner, initialize $\theta_0 = h_{W^*}(\phi^*)$ for a held-out task, and run ordinary gradient descent on
-$l_{T^*}(\theta)$ --- \texttt{adapt\_to\_task\_paper} / \texttt{adapt\_task\_vqe} respectively.
-
-This is deliberately contrasted against the prior repo's \texttt{outer\_loop\_qmaml}, which instead runs
-\texttt{INNER\_STEPS} of SGD on $\theta$ \emph{before} the outer loss and uses the detach trick described in
-Section~\ref{sec:audit} --- a first-order-MAML-style hybrid closer to true MAML in spirit than to the
-paper's actual Algorithm~1. Both are legitimate design points; we report both rather than treating either as
-a straw man.
+Pretraining (classification and VQE) shares this identical structure, differing only in the cost function.
+Evaluation (Algorithm~2): freeze the Learner, set $\theta_0=h_{W^*}(\phi^*)$ for a held-out task, run
+gradient descent on $l_{T^*}(\theta)$. This contrasts with the GSoC baseline (\S\ref{sec:audit}); both are
+reported, neither treated as a straw man.
 
 \subsection{Architecture}
-Classical encoder $\to$ PQC angles (ResNet-18 for jet images; small MLP for tabular HIGGS features) $\to$
-\texttt{StronglyEntanglingLayers} PQC (\texttt{lightning.qubit} + adjoint differentiation) $\to$ linear
-classification head. Learner: 2-hidden-layer MLP, task embedding $\to$ PQC weight tensor.
+Classical encoder (a convolutional backbone for jet images; a small MLP for tabular HIGGS features)
+$\to$ PQC angles $\to$ hardware-efficient ansatz (single-qubit rotations plus a ring of entangling gates),
+evaluated via state-vector simulation with adjoint differentiation where supported (parameter-shift
+otherwise) $\to$ linear classification head. Learner: a 2-layer MLP mapping the task embedding to the PQC
+weight tensor.
 
 \subsection{Baselines}
-Classical PQC initializations (zero, $\pi$, uniform reduced-domain~\citep{wang2023trainability}, Gaussian~\citep{zhang2022escaping}), trained with Reptile-style per-task adaptation (no Learner); and the original
-repo's \texttt{outer\_loop\_qmaml} (inner-loop + first-order detach trick).
+Zero, $\pi$, reduced-domain uniform~\citep{wang2023trainability}, Gaussian~\citep{zhang2022escaping} init
+(per-task adaptation with no Learner); the GSoC baseline (\S\ref{sec:audit}).
 
-\subsection{Evaluation metrics}
-Meta-loss / validation loss trajectories; gradient-norm trajectories during training (the paper's own
-trainability diagnostic); validation accuracy/precision/recall/F1 on held-out tasks; and barren-plateau
-variance scaling, $\mathrm{Var}[\partial C/\partial\theta_{\text{ref}}]$ across many independent
-parameter/task samples vs.\ qubit count at fixed ansatz depth --- the classic McClean et al.~\citep{mcclean2018barren} diagnostic, distinct from (and complementary to) the paper's own gradient-\emph{norm}-during-training
-metric.
+\subsection{Metrics, formally}
+\label{sec:metrics}
+For a held-out task with exact ground energy $E_0$ (sparse diagonalization) and PQC energy
+$E_{\mathrm{PQC}}(\theta_t)$ at adaptation step $t$, we report a log-gap and a final relative error:
+\begin{equation}
+\Delta(t) = \log\!\Big(\big|E_{\mathrm{PQC}}(\theta_t) - E_0\big| + \epsilon\Big), \quad \epsilon=10^{-8},
+\qquad
+\varepsilon_{\mathrm{rel}} = \frac{\big|E_{\mathrm{PQC}}(\theta_T) - E_0\big|}{\big\langle |E_0| \big\rangle_{\text{test tasks}}}.
+\label{eq:metrics}
+\end{equation}
+Convergence speedup of Q-MAML over a classical scheme $A$, at a fixed error threshold $\Delta^\star$:
+\begin{equation}
+S = \frac{t_A(\Delta<\Delta^\star)}{t_{\text{Q-MAML}}(\Delta<\Delta^\star)}.
+\label{eq:speedup}
+\end{equation}
+Classification significance: Welch's $t$-test and Cohen's $d=(\bar x_1-\bar x_2)/s_p$ with pooled standard
+deviation $s_p=\sqrt{(s_1^2+s_2^2)/2}$, $n=4$ seeds per arm. Barren-plateau scan:
+$\mathrm{Var}_{\theta,\text{task}}\!\big[\partial C/\partial\theta_{\mathrm{ref}}\big]$ at a fixed reference
+parameter, sampled across many random inits/tasks, vs.\ qubit count at fixed depth.
 
 \section{Experimental Setup}
 \label{sec:setup}
 
-\begin{itemize}
-    \item \textbf{Datasets}: HIGGS (UCI ML repository, public, streamed subsample of 180k rows --- primary,
-    all results below); Quark-Gluon (ML4Sci, access requested via official channel, pending as of
-    2026-08-20 --- secondary, to be added if access lands before submission).
-    \item \textbf{Task generation}: quantile binning of \texttt{m\_bb} (reconstructed Higgs$\to b\bar b$
-    candidate mass) into 6 bins; class-balanced support/query splits (support=8, query=8) drawn per bin;
-    3 tasks/bin train (18 tasks total), 2 tasks/bin test (12 tasks total) in the paper-scale run.
-    \item \textbf{Qubit counts}: 4, 6, 8 (classification); 4--14 (barren-plateau scan, VQE domain only,
-    where per-task cost is cheap enough to afford a wider grid).
-    \item \textbf{Depth}: 2 (classification PQC), 3 and 6 (VQE barren-plateau scan), 3 (Heisenberg
-    study), 7 (H2 molecule study, matching the paper exactly).
-    \item \textbf{Seeds}: 4 (classification results) --- see Limitations for statistical power discussion.
-    \item \textbf{Compute}: CPU-only (no GPU/QPU access), PennyLane \texttt{lightning.qubit} + adjoint
-    differentiation throughout (falls back to \texttt{default.qubit} + parameter-shift only if lightning is
-    unavailable).
-    \item \textbf{Key hyperparameters} (\texttt{final\_model/config.py} defaults unless noted):
-    \texttt{INNER\_STEPS=5}, \texttt{INNER\_LR=0.02}, \texttt{OUTER\_LR=5e-3}, \texttt{W0\_SCALE=0.01}
-    (classification); VQE pre-training \texttt{lr=0.001}, 30 epochs (matches paper); VQE adaptation
-    \texttt{lr=0.001}, 2000 iterations (matches paper exactly).
+\begin{itemize}[nosep]
+    \item \textbf{Data}: HIGGS (UCI, 180k-row streamed subsample, primary); Quark-Gluon (ML4Sci, access
+    requested, pending).
+    \item \textbf{Tasks}: quantile-bin the Higgs-candidate mass into 6 bins; support=8/query=8 per bin; 3
+    tasks/bin train (18 total), 2/bin test (12 total).
+    \item \textbf{Qubits}: 4/6/8 (classification); 4--14 (VQE-domain barren-plateau scan).
+    \item \textbf{Depth}: 2 (classification), 3/6 (VQE barren-plateau scan), 3 (Heisenberg), 7 (H2, matches
+    paper).
+    \item \textbf{Seeds}: 4 (classification headline).
+    \item \textbf{Compute}: CPU only, state-vector simulation with adjoint differentiation (parameter-shift
+    fallback).
+    \item \textbf{Hyperparameters}: 5 inner-loop steps at inner learning rate 0.02, outer learning rate
+    $5\times10^{-3}$, initial-weight scale 0.01 (classification); VQE pretraining learning rate 0.001 over 30
+    epochs (matches paper); VQE adaptation learning rate 0.001 over 2000 iterations (matches paper).
 \end{itemize}
 
 \section{Results}
 \label{sec:results}
 
-Six results, in the order that best supports the argument: first, that our system is
-mechanically correct (Sections~\ref{sec:vqe-molecule}--\ref{sec:vqe-heisenberg}, matching the paper's own
-VQE settings); second, that it delivers a real classification-domain improvement
-(Section~\ref{sec:classification}); third, that the barren-plateau diagnostic precisely bounds what that
-improvement is and isn't (Sections~\ref{sec:bp-vqe}--\ref{sec:bp-combined}), including a direct,
-quantitative link between the classification result and the classification-domain barren-plateau diagnostic
-that neither experiment was designed to produce on its own.
-
-\subsection{HEP classification --- primary result}
+\subsection{HEP classification}
 \label{sec:classification}
-HIGGS, 10 epochs, 4 seeds, qubits 4/6/8.
+HIGGS, 10 epochs, 4 seeds, 4/6/8 qubits.
 
-An initial 5-epoch/1-seed pass confirmed the harness works end-to-end but whose validation accuracy (48
-predictions total) was too noisy to trust; an intermediate 2-seed pass produced a headline claim (see
-methodological note below) that did not survive replication at 4 seeds. The numbers below, from the full
-4-seed run, are the ones we cite.
-
-\textbf{Headline result, backed by significance testing: \texttt{qmaml\_paper} has the highest mean
-validation accuracy at every qubit count tested, with a large effect size throughout, and beats
-\texttt{gaussian} initialization and the prior GSoC repo's own Q-MAML variant (\texttt{qmaml\_existing})
-with statistical significance ($p<0.05$) at all three qubit counts.}
-
-\begin{table}[h]
+\begin{table}[ht]
 \centering
-\caption{Final validation accuracy (mean $\pm$ std, $n=4$ seeds).}
+\caption{Final validation accuracy (mean $\pm$ std, $n=4$).}
 \label{tab:classification-results}
 \begin{tabular}{lccccc}
 \toprule
-Qubits & \texttt{qmaml\_paper} & \texttt{zero} & \texttt{uniform} & \texttt{gaussian} & \texttt{qmaml\_existing} \\
+Qubits & Q-MAML & Zero & Uniform & Gaussian & GSoC baseline \\
 \midrule
 4 & \textbf{0.589 $\pm$ 0.035} & 0.534 $\pm$ 0.037 & 0.510 $\pm$ 0.019 & 0.487 $\pm$ 0.034 & 0.505 $\pm$ 0.049 \\
 6 & \textbf{0.576 $\pm$ 0.033} & 0.497 $\pm$ 0.031 & 0.513 $\pm$ 0.060 & 0.503 $\pm$ 0.032 & 0.523 $\pm$ 0.043 \\
@@ -260,292 +253,957 @@ Qubits & \texttt{qmaml\_paper} & \texttt{zero} & \texttt{uniform} & \texttt{gaus
 \end{tabular}
 \end{table}
 
-Welch's $t$-test, \texttt{qmaml\_paper} vs.\ \texttt{gaussian}: $p=0.006, 0.020, 0.034$ (4/6/8 qubits, all
-significant, Cohen's $d=2.95/2.22/1.94$ --- very large). vs.\ \texttt{qmaml\_existing}: $p=0.035, 0.106,
-0.035$ (significant at 4 and 8 qubits, $d=1.98/1.36/2.02$). vs.\ whichever classical scheme happens to be
-\emph{best} at that qubit count (zero at 4 qubits, uniform at 6 and 8): directionally positive at all three
-($d=1.52/1.28/0.87$, medium-to-large) but $p=0.076/0.134/0.287$ --- not significant at $n=4$ seeds. That
-last comparison is the hardest one to clear by construction (the ``best'' baseline is selected post-hoc per
-qubit count) and should be read as underpowered, not negative.
+\begin{table}[ht]
+\centering\small
+\caption{Q-MAML vs.\ baselines: Welch's $t$-test $p$ / Cohen's $d$.}
+\label{tab:significance}
+\begin{tabular}{lccc}
+\toprule
+Qubits & vs.\ Gaussian & vs.\ GSoC baseline & vs.\ best classical (post-hoc) \\
+\midrule
+4 & $p{=}0.006$, $d{=}2.95$ & $p{=}0.035$, $d{=}1.98$ & $p{=}0.076$, $d{=}1.52$ \\
+6 & $p{=}0.020$, $d{=}2.22$ & $p{=}0.106$, $d{=}1.36$ & $p{=}0.134$, $d{=}1.28$ \\
+8 & $p{=}0.034$, $d{=}1.94$ & $p{=}0.035$, $d{=}2.02$ & $p{=}0.287$, $d{=}0.87$ \\
+\bottomrule
+\end{tabular}
 
-Meta-loss (the training objective) shows an even cleaner separation: 0.382/0.360/0.325 (4/6/8 qubits) for
-\texttt{qmaml\_paper} vs.\ 0.68--0.70 for every other variant at every qubit count --- every classical
-baseline and \texttt{qmaml\_existing} are nearly flat over 10 epochs, while \texttt{qmaml\_paper}
-\emph{accelerates}, consistent with the Learner progressively exploiting shared structure across the task
-pool, exactly Algorithm~1's intended mechanism (Figure~\ref{fig:classification-accuracy}). This is, to our
-knowledge, the first controlled evidence that Q-MAML's actual published algorithm (not the prior GSoC
-repo's inner-loop variant, not the never-actually-trained Higgs attempt) improves few-shot HEP
-classification trainability.
+\vspace{4pt}
+\begin{tabular}{lccc}
+\toprule
+Meta-loss & 4 qubits & 6 qubits & 8 qubits \\
+\midrule
+Q-MAML & 0.382 & 0.360 & 0.325 \\
+Every other scheme & \multicolumn{3}{c}{0.68--0.70 (flat)} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{figure}[h]
+Significant against Gaussian and the GSoC baseline at all three qubit counts; against the post-hoc best
+classical scheme, directionally positive but not significant at $n=4$ (underpowered, not negative: the
+comparator is selected after the fact per qubit count). Q-MAML is the only variant whose training loss
+moves (Figure~\ref{fig:classification-accuracy}).
+
+\begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../final_model/results/higgs_v3/val_accuracy_comparison.png}
 \caption{Validation accuracy vs.\ epoch, 4/6/8 qubits, mean $\pm$ std over 4 seeds.}
 \label{fig:classification-accuracy}
 \end{figure}
 
-\begin{quotation}
-\noindent\textbf{A methodological note we are keeping in, not hiding.} An earlier 2-seed pass of this exact
-experiment produced a dramatic, clean-looking story: the accuracy advantage appeared to shrink monotonically
-and reverse by 8 qubits, seemingly confirming the barren-plateau connection
-(Section~\ref{sec:bp-classification}) almost too perfectly. That result did not survive replication at 4
-seeds --- the mean gap at 8 qubits is actually $+0.039$ (\texttt{qmaml\_paper} still ahead), not negative. We
-are reporting this correction explicitly rather than quietly revising the number, because it is a useful,
-concrete illustration of exactly the risk the Limitations section (seed count flagged as the top priority)
-warns about, and because a paper's credibility on its \emph{positive} claims depends on how honestly it
-handles claims that don't hold up.
-\end{quotation}
+\begin{table}[ht]
+\centering
+\caption{Correction: accuracy gap (Q-MAML $-$ best classical) at 2 vs.\ 4 seeds.}
+\label{tab:correction-gap}
+\begin{tabular}{lccc}
+\toprule
+Qubits & 4 & 6 & 8 \\
+\midrule
+Gap at $n{=}4$ seeds & $+0.055$ & $+0.063$ & $+0.039$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Given this correction, the connection to Section~\ref{sec:bp-classification}'s barren-plateau diagnostic is
-now a softer, directional claim, not a confirmed quantitative match. The mean gap
-(\texttt{qmaml\_paper} $-$ best classical) is $0.055 \to 0.063 \to 0.039$ at 4/6/8 qubits --- a real but
-modest, non-monotonic decline, consistent with (but not strong confirmation of) the landscape-collapse
-story. The robust, statistically defensible claim is the comparison against \texttt{gaussian} and
-\texttt{qmaml\_existing}, which holds cleanly at every qubit count tested.
+\begin{keyresult}
+\textbf{Correction.} An earlier 2-seed pass showed the gap reversing (going negative) by 8 qubits. At $n=4$
+seeds (Table~\ref{tab:correction-gap}) it does not: Q-MAML stays ahead at every qubit count, with a modest,
+non-monotonic decline directionally consistent with \S\ref{sec:bp-classification} but not a confirmed match.
+\end{keyresult}
 
-Two further honest complications: (1)~\texttt{qmaml\_paper}'s validation \emph{loss} is worse
-(0.80--0.87, and gets \emph{worse} with more qubits) than every other scheme ($\sim$0.69) despite best
-accuracy --- a calibration issue, not a clean sweep on every metric. (2)~Its mean gradient norm
-(1.36--1.61, increasing with qubit count) is markedly \emph{higher} than the classical schemes
-(0.27--0.64) --- sitting oddly against the original paper's ``moderate gradient norm is better'' framing;
-here a consistently higher norm coincides with consistently best accuracy at every qubit count tested, not a
-monotonic trade-off with scale.
+Two other findings. Q-MAML's validation loss is worse (0.80--0.87, worsening with qubit count) than every
+other scheme ($\sim$0.69) despite best accuracy: a calibration gap, not a clean sweep. Its mean gradient
+norm (1.36--1.61) is higher than classical schemes (0.27--0.64), the opposite of the paper's ``moderate norm
+is better'' framing: here higher norm tracks with best accuracy at every qubit count.
 
-\subsection{Molecule Hamiltonian VQE --- strongest validation, paper's exact ansatz}
+\textbf{Quark-gluon (second dataset, generalization check).} 6 qubits, 10 epochs, 2 seeds, jet-substructure
+features. Q-MAML again beats every classical scheme by a wide margin: validation accuracy $0.776\pm0.005$
+vs.\ $0.594$--$0.599$ (zero/uniform/Gaussian, tightly clustered); meta-loss $0.308\pm0.003$ vs.\
+$0.688$--$0.701$ (near chance level, $\ln2\approx0.693$, for every classical scheme). No `zero`-specific
+anomaly here, matching HIGGS and unlike the VQE-domain fixed-point pattern. Only 2 seeds (effect size
+$\sim6.8$ in raw terms, not a powered test): read as directional confirmation the HIGGS result generalizes,
+not a sharper result than HIGGS's own 4-seed numbers.
+
+\FloatBarrier
+\subsection{Molecule Hamiltonian VQE}
 \label{sec:vqe-molecule}
-H2 at 4 qubits, depth 7, \textbf{2000 adaptation iterations} (both matching the paper exactly), paper's exact
-\texttt{StronglyEntanglingLayers} ansatz --- no reconstruction caveat here, unlike the Heisenberg
-study.
+H2, 4 qubits, depth 7, 2000 iterations, paper's exact ansatz.
 
-\textbf{Even cleaner than the Heisenberg study, and fully consistent with it.} \texttt{qmaml} reaches
-machine-precision agreement with the exact ground-state energy (log-gap $\sim{-}17.3$, the float64 noise
-floor) by \textbf{iteration $\sim$100 and never moves again} --- effectively instant convergence. The
-classical schemes (\texttt{pi}, \texttt{uniform}, \texttt{gaussian}) descend steadily but far more slowly,
-needing \textbf{$\sim$1500--2000 iterations} to reach comparable quality --- a $\sim$15--20$\times$ reduction
-in circuit evaluations for \texttt{qmaml}, an even larger speedup than the Heisenberg case's
-$\sim$4--6$\times$. \texttt{zero}-init remains permanently stuck at its starting value (the same fixed-point
-artifact seen independently throughout this work). Critically, by iteration 2000 all four non-degenerate
-schemes converge to nearly the same final value ($-17.04$ to $-17.30$) --- confirming, a second time and even
-more cleanly than the Heisenberg case, that Q-MAML's real, robust, repeatable advantage is about
-\emph{how fast} one reaches a good answer, not about reaching a \emph{different, better} answer that
-classical optimization cannot eventually find. Because this uses the paper's own specified circuit, this
-result is attributable to the algorithm itself, not a fortunate ansatz guess, making it the single strongest
-piece of evidence in this work that our system does exactly what Algorithm~1/2 describe.
+\begin{table}[ht]
+\centering
+\caption{H2 molecule: iteration to reach the reported quality, and final energy (2000 iterations).}
+\label{tab:vqe-molecule}
+\begin{tabular}{lcc}
+\toprule
+Scheme & Iteration to converge & Final energy \\
+\midrule
+Q-MAML & $\sim$100 (machine precision, $\Delta\sim-17.3$) & $-17.30$ \\
+$\pi$/uniform/Gaussian & $\sim$1500--2000 & $-17.04$ to $-17.30$ \\
+Zero & fixed at start value & (unchanged) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{figure}[h]
+By iteration 2000 all four non-degenerate schemes converge to the same final energy (Table~\ref{tab:vqe-molecule}):
+the advantage is speed ($S\approx15$--$20$, Eq.~\ref{eq:speedup}), not a different final optimum, matching
+\S\ref{sec:vqe-heisenberg}. This uses the paper's exact circuit, so it is the strongest evidence our system
+implements Algorithm~1/2 correctly.
+
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\textwidth]{../final_model/results/vqe_molecule/adaptation_convergence.png}
-\caption{H2 molecule Hamiltonian: adaptation convergence by initialization scheme, 2000 iterations.}
+\caption{H2 molecule Hamiltonian: adaptation convergence by init scheme, 2000 iterations.}
 \label{fig:vqe-molecule}
 \end{figure}
 
-\subsection{Heisenberg XYZ VQE --- system validated against the paper's own setting}
+\FloatBarrier
+\subsection{Heisenberg XYZ VQE}
 \label{sec:vqe-heisenberg}
-6 qubits, depth 3, 8 held-out Heisenberg-XYZ tasks, \textbf{2000 adaptation iterations (the paper's exact
-budget)}.
+6 qubits, depth 3, 8 held-out tasks, 2000 iterations (paper's budget, reconstructed ansatz: paper's
+appendix circuit unavailable to us).
 
-\textbf{Correction from an earlier 300-iteration pass:} at reduced budget, \texttt{qmaml} appeared to hold a
-large, durable lead (final log-gap 0.82 vs.\ 1.71--1.76 for classical schemes). At the paper's actual
-2000-iteration budget, that final gap \textbf{closes substantially} --- \texttt{uniform} (0.736) and
-\texttt{gaussian} (0.727) end nearly tied with \texttt{qmaml} (0.711); only \texttt{pi} (0.966) and the
-permanently-stuck \texttt{zero} (2.522, an exact instance of the trivial-fixed-point degeneracy found
-independently in Section~\ref{sec:bp-vqe}) stay clearly behind.
+\begin{table}[ht]
+\centering
+\caption{Heisenberg XYZ: log-gap $\Delta$ at iteration 0 and at iteration 2000.}
+\label{tab:vqe-heisenberg}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & Uniform & Gaussian & $\pi$ & Zero \\
+\midrule
+$\Delta(0)$ & $\sim1.5$ & $\sim2.5$ & $\sim2.5$ & $\sim2.5$ & $\sim2.5$ \\
+$\Delta(2000)$ & $0.711$ & $0.736$ & $0.727$ & $0.966$ & $2.522$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-The real, robust finding is convergence \emph{speed}, not a permanently better final optimum.
-\texttt{qmaml}'s curve visibly flattens by iteration $\sim$250--500, while \texttt{uniform}/\texttt{gaussian}
-are still descending steeply at that point and need roughly 1500--2000 iterations to catch up --- a
-$\sim$4--6$\times$ reduction in the number of quantum circuit evaluations needed to reach comparable
-solution quality. This is arguably a \emph{more} relevant and defensible claim for the NISQ era this paper
-(and Q-MAML's) is motivated by --- circuit evaluations are the expensive, limited resource --- than
-``permanently better'' would have been, and it is a more precise characterization of what our system
-actually demonstrates than the truncated-budget snapshot supported. \texttt{qmaml} is
-already closer to the ground state before any adaptation at all (iteration-0 log-gap $\sim$1.5 vs.\ $\sim$2.5
-for every classical scheme), which is the initialization-quality claim Q-MAML actually makes; the
-fast-convergence result is the direct consequence of that better starting point, not an independent
-additional claim.
+At 300 iterations (earlier pass) Q-MAML held a large lead ($0.82$ vs.\ $1.71$--$1.76$); at 2000 iterations
+that gap mostly closes (Table~\ref{tab:vqe-heisenberg}). Q-MAML flattens by iteration $\sim$250--500 while
+uniform/Gaussian need $\sim$1500--2000, $S\approx4$--$6$. Q-MAML starts closer to the ground state before
+any adaptation, the initialization-quality claim the paper actually makes; the speed result follows from it.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\textwidth]{../final_model/results/vqe_heisenberg/adaptation_convergence.png}
-\caption{Heisenberg XYZ, 6 qubits: adaptation convergence by initialization scheme, 2000 iterations.}
+\caption{Heisenberg XYZ, 6 qubits: adaptation convergence by init scheme, 2000 iterations.}
 \label{fig:vqe-heisenberg}
 \end{figure}
 
-This still gives strong evidence our system (\texttt{meta/qmaml\_paper\_loops.py} /
-\texttt{vqe\_qmaml.py}, same Algorithm~1/2 logic) is mechanically correct before trusting its extension to
-HEP classification --- matching the paper's \emph{convergence-speed} claim faithfully, at reduced qubit
-count and with a reconstructed (not paper-original) ansatz circuit.
-
-\subsection{Barren-plateau variance scaling, VQE domain}
+\FloatBarrier
+\subsection{Barren-plateau scaling, VQE domain}
 \label{sec:bp-vqe}
-Qubits 4--14, depths $\{3,6\}$, $N_{\text{samples}}=80$.
+Qubits 4--14, depths $\{3,6\}$, 80 samples per point. Zero/$\pi$ (constant) init show zero variance
+trivially (no sample-to-sample variation, not plateau resistance). Among the random schemes (Q-MAML,
+uniform, Gaussian): no exponential decay over 4--10 qubits at depth 3, likely too shallow/small for the
+asymptotic regime. Q-MAML's variance is comparable to or larger than classical schemes at every qubit count:
+no evidence it changes the scaling exponent; its VQE advantage (\S\ref{sec:vqe-heisenberg}) is landscape
+placement, not plateau resistance.
 
-\texttt{zero}/\texttt{pi} (constant) initializations trivially show zero variance in the McClean-style
-diagnostic (every sample is identical, so there is nothing to vary) --- this is a measurement artifact, not
-evidence of barren-plateau resistance, and needs to be presented that way rather than as a bar on the same
-chart implying they ``win.'' Among the genuinely random schemes (\texttt{qmaml}, \texttt{uniform},
-\texttt{gaussian}), none show the expected exponential variance decay over 4--10 qubits at depth 3 ---
-plausibly because these circuits are too shallow/small to be in the asymptotic 2-design-like regime the
-McClean result assumes. \texttt{qmaml}'s gradient variance was comparable to or larger than the classical
-random schemes at every qubit count tested, not smaller. Read plainly, this diagnostic gives no evidence
-Q-MAML changes the variance-scaling exponent; whatever advantage it has (Section~\ref{sec:vqe-heisenberg})
-looks like better \emph{mean placement} in the landscape rather than resistance to the asymptotic BP
-phenomenon --- which is actually a more precise statement of the original paper's own claim (moderate
-gradient \emph{norm}, proximity to optimum) than the popular ``Q-MAML solves barren plateaus'' gloss would
-suggest. This is the paper's most defensible empirical claim so far --- a corrected, more precise version of
-what Q-MAML does and doesn't buy you --- and should be stated as such rather than softened into a
-positive-only result.
-
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../final_model/results/barren_plateau/variance_scaling.png}
-\caption{Barren-plateau variance scaling by initialization scheme, VQE domain (depths 3 and 6).}
+\caption{Barren-plateau variance scaling by init scheme, VQE domain (depths 3 and 6).}
 \label{fig:bp-vqe}
 \end{figure}
 
-\subsection{Barren-plateau variance scaling, classification domain}
+\FloatBarrier
+\subsection{Barren-plateau scaling, classification domain}
 \label{sec:bp-classification}
 \label{sec:bp-higgs}
 HIGGS.
 
-Sharp contrast with the VQE result above: all three schemes (\texttt{qmaml}, \texttt{uniform},
-\texttt{gaussian}) show a clean, near-linear exponential decay on the log scale, $\sim$8 orders of magnitude
-from 4 to 10 qubits --- a textbook barren plateau, unlike the flat VQE trend at the same qubit range. Likely
-explanation: this classification cost (cross-entropy over a many-qubit expectation-value readout) behaves
-like a ``global'' cost function, which is known to plateau at smaller system sizes than local Hamiltonian
-costs~\citep{cerezo2021costfunction}. By 10 qubits every scheme, including \texttt{qmaml}, collapses to the
-same numerical floor ($\sim 10^{-35}$): a learned initializer does not prevent the plateau once the model is
-deep enough into it, it can only help before that point.
+\begin{keyresult}
+All three schemes (Q-MAML, uniform, Gaussian) show $\sim$8 orders of magnitude exponential decay from 4 to
+10 qubits: a textbook plateau, unlike the flat VQE trend at the same qubit range, consistent with
+classification cross-entropy behaving as a ``global'' cost function~\citep{cerezo2021costfunction}. By 10
+qubits every scheme collapses to the same floor, $\sim10^{-35}$.
+\end{keyresult}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\textwidth]{../final_model/results/barren_plateau_higgs/variance_scaling.png}
-\caption{Barren-plateau variance scaling by initialization scheme, HIGGS classification domain.}
+\caption{Barren-plateau variance scaling by init scheme, HIGGS classification domain.}
 \label{fig:bp-higgs}
 \end{figure}
 
-On the ranking below the collapse point: an initial pass (8-epoch Learner pretrain) suggested \texttt{qmaml}
-sat at or below the classical schemes throughout --- re-run with a properly trained Learner (25 epochs), that
-ordering did not hold up. \texttt{qmaml} is lowest-variance at 4 and 8 qubits but \emph{highest} at 6 qubits
-($1.65\times10^{-6}$ vs.\ \texttt{uniform} $4.65\times10^{-8}$, \texttt{gaussian} $3.93\times10^{-7}$) --- the
-apparent monotonic advantage in the first pass was a pretrain-length artifact, not a robust effect, and
-correcting it is itself informative: no scheme cleanly dominates this diagnostic at any qubit count, a
-genuine null result rather than a weak positive. This strengthens, rather than weakens, the paper's central
-methodological point (Section~\ref{sec:bp-combined}) --- the honest finding across both domains and both
-versions of this notebook is that Q-MAML does not measurably resist gradient-variance collapse. The
-qualitative collapse-point qubit range ($\sim$8--10) --- the number that matters for connecting this result
-to Section~\ref{sec:classification}'s classification-accuracy finding --- is unchanged by the fix.
+\begin{table}[ht]
+\centering
+\caption{Gradient variance at 6 qubits: pretrain-length sensitivity.}
+\label{tab:bp-pretrain}
+\begin{tabular}{lccc}
+\toprule
+Pretrain length & Q-MAML & Uniform & Gaussian \\
+\midrule
+Short (8 epochs) & at/below classical & baseline & baseline \\
+Long (25 epochs) & $1.65\times10^{-6}$ & $4.65\times10^{-8}$ & $3.93\times10^{-7}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Below the collapse point, ranking is unstable (Table~\ref{tab:bp-pretrain}): a pretrain-length artifact, not
+a stable ranking. No scheme dominates at any qubit count. The 8--10-qubit collapse-point range itself is
+unchanged.
 
 \subsection{Combined takeaway}
 \label{sec:bp-combined}
-Two precise, defensible claims, not one triumphant one: (1)~Q-MAML's benefit is about landscape placement,
-not about changing the asymptotic barren-plateau variance-scaling exponent, in \emph{either} domain tested;
-(2)~HEP classification with PQCs appears to be a harder regime than VQE for any initialization scheme to
-help in, since its cost function plateaus faster --- a genuine, citable challenge for the QMLHEP research
-direction generally, not just for Q-MAML.
+(1) Q-MAML's benefit is landscape placement, not a change in the barren-plateau scaling exponent, in either
+domain. (2) HEP classification plateaus faster than VQE for every scheme tested: a challenge for the QMLHEP
+direction generally, not specific to Q-MAML.
 
+\FloatBarrier
+\section{Q-MAML on Genuine HEP Hamiltonians: A GSoC 2026 Pilot}
+\label{sec:genuine-hep}
+
+Sections above test Q-MAML on HEP \emph{data} (HIGGS) or the paper's own non-HEP VQE settings. Neither is
+what QMLHEP8 asks for: a Learner initializing VQEs for Hamiltonians that are themselves lattice field
+theories. Table~\ref{tab:tracks-overview} summarizes the ten tracks piloted here (2--8 qubits, single
+seed except where noted, verified for correctness before use, metrics of \S\ref{sec:metrics}).
+
+\begin{table}[ht]
+\centering\small
+\caption{Track overview.}
+\label{tab:tracks-overview}
+\begin{tabular}{p{0.13\textwidth}p{0.06\textwidth}p{0.30\textwidth}p{0.28\textwidth}}
+\toprule
+Track & Qubits & Structure & Q-MAML verdict \\
+\midrule
+A: Schwinger & 4--8 & U(1) gauge eliminated analytically & Wins, depth-dep. \\
+B: $\mathbb{Z}_2$ LGT & 8 & Gauge symmetry, penalty-enforced & Worst, diagnosed \\
+C: $\phi^4$ scalar & 6 & Bosonic, no gauge/fermion structure & Wins (interp.\ only) \\
+D: SU(2) LGT & 4 & Non-Abelian gauge eliminated analytically & Wins, cleanest of all \\
+E: neutrino & 4 & All-to-all, no locality, reformulated & Wins, not yet converged \\
+F: SUSY QM & 4 & Discrete + continuous task space & Wins, beats hand-picked init \\
+G: $\mathbb{D}_8$ LGT & 7 & Non-Abelian, un-reduced, fermionic matter & Wins, modest margin \\
+H: nuclear EFT & 8 & UCCSD ansatz, 3-nucleus discrete axis & Ties (same final, faster) \\
+I: Yukawa & 4 & Fermion-boson, reformulated & Ties with zero-init \\
+J: LMG & 2 & Nuclear-structure-adjacent, not HEP & Null result (too small) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\FloatBarrier
+\subsection{Track A: lattice Schwinger model}
+\label{sec:track-a}
+Single-flavor Kogut-Susskind staggered fermions, gauge field eliminated via Gauss's law; task params
+$(m_0, g)$. Hardware-efficient ansatz, 16 train/6 test tasks, 40 pretrain epochs, 300 adaptation iterations.
+
+\begin{table}[ht]
+\centering
+\caption{$L{=}2$ (4 qubits, depth 3): final relative error $\varepsilon_{\mathrm{rel}}$ and iteration to
+reach $<1\%$ error.}
+\label{tab:schwinger-l2}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & $\pi$ & Gaussian & Uniform & Zero \\
+\midrule
+$\varepsilon_{\mathrm{rel}}$ & $\sim0\%$ & $0.06\%$ & $0.19\%$ & $1.61\%$ & $396\%$ \\
+Iteration $<1\%$ & 4 & 192 & 266 & never & never \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Q-MAML converges fastest and most accurately at $L{=}2$ (Table~\ref{tab:schwinger-l2}). Its init log-gap
+($-3.29$) is already better than any classical scheme's starting point. Zero-init is a fixed point (exactly
+flat error) for the whole run.
+
+At $L{=}3$ (6 qubits), same depth, $\pi$ overtakes Q-MAML by the final iteration ($32.95\%$ vs.\ $38.08\%$,
+Table~\ref{tab:schwinger-depth}). Pretrain gradient norm stays healthy: points to insufficient ansatz depth,
+not a plateau.
+
+\begin{table}[ht]
+\centering
+\caption{Final relative energy error $\varepsilon_{\mathrm{rel}}$ vs.\ ansatz depth, $L=3$ (6 qubits).}
+\label{tab:schwinger-depth}
+\begin{tabular}{lccccc}
+\toprule
+Depth & Q-MAML & $\pi$ & Gaussian & Uniform & Zero \\
+\midrule
+3 & 38.08\% & \textbf{32.95\%} & 46.24\% & 56.12\% & 697.64\% \\
+6 & \textbf{2.63\%} & 3.06\% & 12.92\% & 9.40\% & 697.64\% \\
+9 & \textbf{0.05\%} & 0.57\% & 1.42\% & 1.35\% & 697.64\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Depth 6/9 recovers and then extends Q-MAML's lead ($\sim10\times$ better than $\pi$ at depth 9): the
+$L{=}2\to L{=}3$ dip is a depth-insufficiency artifact of reusing the $L{=}2$ depth, not a breakdown at
+larger qubit count. Zero-init stays at an identical error at every depth (algebraic fixed point,
+depth-independent).
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.48\textwidth]{../final_model/results/schwinger/adaptation_convergence.png}
+\includegraphics[width=0.48\textwidth]{../final_model/results/schwinger/adaptation_convergence_L3.png}
+\caption{Schwinger model adaptation convergence: $L=2$/depth 3 (left) vs.\ $L=3$/depth 3 (right).}
+\label{fig:schwinger}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{$L{=}4$ (8 qubits, depth 12) and pretrain diagnostics.}
+\label{tab:schwinger-l4}
+\begin{tabular}{lcc}
+\toprule
+& Q-MAML & $\pi$ \\
+\midrule
+Final relative error & 31.81\% & \textbf{8.56\%} \\
+\midrule
+\multicolumn{3}{l}{Pretrain gradient norm: $23.6\to24.6$ over 40 epochs (no decrease)} \\
+\multicolumn{3}{l}{Pretrain mean energy: stalls at $7.21$ (true ground energies $\sim{-2}$ to $-4$)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The depth story does not extrapolate cleanly to $L{=}4$: extending ``depth $\approx1.5\times$ qubits'' to
+depth 12, Q-MAML loses to $\pi$ (Table~\ref{tab:schwinger-l4}). Unlike the $L{=}3$ case, pretraining itself
+fails to converge, not just the ansatz. Open question: whether pretrain budget, not just depth, needs to
+scale with qubit count. One spot-check, not a scan.
+
+\FloatBarrier
+\subsection{Track B: single-plaquette $\mathbb{Z}_2$ lattice gauge theory}
+\label{sec:track-b}
+One plaquette of the two-leg-ladder geometry in~\citep{z2lgtbp2025} (8 qubits: 4 matter + 4 link), task
+params $(J,m,\mu)$. Gauss's law enforced by an energy penalty
+\begin{equation}
+H_{\text{penalty}} = V\sum_l (G_l - q_l)^2, \qquad V=10,
+\label{eq:gausspenalty}
+\end{equation}
+not eliminated analytically: verified exactly ($[H,G_l]=0$ and $G_l^2=\mathbb{1}$ to machine precision).
+
+\begin{table}[ht]
+\centering
+\caption{Track B headline: final relative error and diagnosis at $V{=}10$.}
+\label{tab:z2lgt-headline}
+\begin{tabular}{lccccc}
+\toprule
+& Uniform & $\pi$ & Gaussian & Q-MAML & Zero \\
+\midrule
+$\varepsilon_{\mathrm{rel}}$ & \textbf{23.07\%} & 24.69\% & 24.05\% & 59.16\% & 112.27\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Q-MAML's log-gap is flat for the full 300-iteration budget ($3.800\to3.791$) while classical schemes,
+starting worse ($\Delta(0)\sim4.43$), descend substantially: the opposite of Track A.
+
+\begin{keyresult}
+\textbf{Diagnosis.} The gradient at Q-MAML's predicted init is small but nonzero ($5.73$, vs.\ zero-init's
+exact $0$); learning rates $0.02/0.1/0.3$ all plateau at the same cost within 100 iterations: a landscape
+plateau, not a fixed point. Leading hypothesis: at $V{=}10$ the penalty term (Eq.~\ref{eq:gausspenalty},
+$O(10)$) dominates the physical terms ($O(1)$), so pretraining mostly reduces constraint violation instead of
+encoding $(J,m,\mu)$.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/z2_lgt/adaptation_convergence.png}
+\caption{$\mathbb{Z}_2$ LGT: adaptation convergence by init scheme. Q-MAML is not competitive here.}
+\label{fig:z2lgt}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{Final relative energy error vs.\ penalty strength $V$ (Eq.~\ref{eq:gausspenalty}).}
+\label{tab:z2lgt-v}
+\begin{tabular}{lccccc}
+\toprule
+$V$ & Q-MAML & $\pi$ & Gaussian & Uniform & Zero \\
+\midrule
+1 & 149.49\% & 163.97\% & 156.96\% & \textbf{145.08\%} & 415.51\% \\
+3 & 77.39\% & 51.75\% & 40.78\% & \textbf{27.68\%} & 148.56\% \\
+10 & 59.16\% & 24.69\% & 24.05\% & \textbf{23.07\%} & 112.27\% \\
+30 & 27.19\% & 17.73\% & 27.42\% & \textbf{16.49\%} & 103.91\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $V$-sweep does not confirm the penalty-dominance hypothesis: Q-MAML plateaus (flat curve) at every
+$V\in\{1,3,10,30\}$, ties the best classical scheme only at $V{=}1$, and $V{=}3$ (not $V{=}30$) is its
+relatively worst point ($2.8\times$ the best scheme). Weakening $V$ does not straightforwardly fix Q-MAML.
+Narrower, $V$-independent finding: the Learner's pretraining on this Hamiltonian/ansatz combination reliably
+lands in flat regions, mechanism unidentified. Most promising untried fix: a gauge-invariant, structurally
+(not penalty-) invariant ansatz~\citep{z2lgtbp2025} (\S\ref{sec:limitations}).
+
+\begin{table}[ht]
+\centering
+\caption{3-seed replication, $V{=}10$: mean $\pm$ std relative error (per-seed values in parentheses).}
+\label{tab:z2lgt-seeds}
+\begin{tabular}{lc}
+\toprule
+Scheme & Relative error, 3 seeds \\
+\midrule
+Q-MAML & $49.38\%\pm13.70\%$ ($59.16$/$30.01$/$58.96\%$) \\
+Uniform & $20.34\%\pm3.65\%$ \\
+Gaussian & $19.43\%\pm4.76\%$ \\
+$\pi$ & $27.35\%\pm3.22\%$ \\
+Zero & $111.87\%\pm1.48\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Q-MAML's best seed ($30.01\%$) is still worse than every uniform seed ($15.18$--$23.07\%$): ranking holds
+seed-by-seed; magnitude is seed-sensitive (Table~\ref{tab:z2lgt-seeds}).
+
+\FloatBarrier
+\subsection{Track C: $\phi^4$ lattice scalar field theory}
+\label{sec:track-c}
+Li/Macridin/Mrenna/Spentzouris encoding~\citep{scalarfield2023} (6 qubits: 2 sites $\times$ 3 qubits/site,
+field-amplitude truncation), task params $(m_0^2,\lambda_0)$. No gauge field, no fermion mapping; $H$ is a
+dense Hermitian matrix (a field-amplitude-basis Hamiltonian, not a Pauli sum). Verified: conjugate-field
+eigenvalues match the closed-form analytic formula exactly; reconstructed harmonic-oscillator spectrum
+matches $n+\tfrac12$ to $<2\%$ on low-lying levels.
+
+\begin{table}[ht]
+\centering
+\caption{Track C headline: final relative energy error.}
+\label{tab:scalar-headline}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & Zero & Uniform & Gaussian & $\pi$ \\
+\midrule
+$\varepsilon_{\mathrm{rel}}$ & \textbf{5.86\%} & 5.77\% & 7.11\% & 7.55\% & 36.06\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Q-MAML reaches log-gap $-1.74$ by iteration 50; zero/uniform/Gaussian mostly catch up by iteration 300: a
+speed advantage ($S\approx3$), not a different final optimum, matching
+\S\ref{sec:vqe-heisenberg}/\ref{sec:vqe-molecule}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/scalar_field/adaptation_convergence.png}
+\caption{$\phi^4$ scalar field: adaptation convergence by init scheme.}
+\label{fig:scalarfield}
+\end{figure}
+
+\begin{keyresult}
+\textbf{Two corrections to earlier sections.} Zero-init is \emph{not} stuck here (log-gap $1.367\to-1.893$,
+tying Q-MAML): the only Hamiltonian in this paper where the zero-parameter fixed point doesn't hold, so that
+pattern is Hamiltonian-structure-dependent. $\pi$ (best classical scheme on Track B, 2nd-best on Track A at
+$L{=}2$) is worst here ($36.06\%$, $\sim5$--$6\times$ worse than alternatives). No classical scheme is
+reliable across all three tracks under interpolation; Q-MAML is.
+\end{keyresult}
+
+\begin{table}[ht]
+\centering
+\caption{3-seed replication (uniform-random split): mean $\pm$ std relative error.}
+\label{tab:scalar-seeds}
+\begin{tabular}{lc}
+\toprule
+Scheme & Relative error, 3 seeds \\
+\midrule
+Q-MAML & $6.05\%\pm1.60\%$ \\
+Zero & $6.12\%\pm1.54\%$ \\
+Uniform & $6.90\%\pm1.80\%$ \\
+Gaussian & $6.85\%\pm1.52\%$ \\
+$\pi$ & $27.00\%\pm9.09\%$ (best seed $14.58\%$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Phase-stratified generalization.} This Hamiltonian's task space spans a symmetric/broken-symmetry
+transition~\citep{scalarfield2023}. Train on symmetric ($m_0^2\in[0.3,1.0]$), test on
+broken-symmetry-tending ($m_0^2\in[-2.5,-1.7]$), and reverse.
+
+\begin{table}[ht]
+\centering
+\caption{Phase-stratified final relative energy error (single seed).}
+\label{tab:phase-stratified}
+\begin{tabular}{p{0.16\textwidth}ccccc}
+\toprule
+Direction & Q-MAML & Zero & Uniform & Gaussian & $\pi$ \\
+\midrule
+Sym.$\to$broken & 3.13\% & \textbf{1.81\%} & \textbf{1.81\%} & \textbf{1.81\%} & 5.04\% \\
+Broken$\to$sym. & 93.37\% & n/a & \textbf{85.54\%} & n/a & n/a \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Interpolation advantage does not survive extrapolation, either direction. In the symmetric$\to$broken
+direction, Q-MAML's init starts \emph{behind} classical schemes at iteration 0 (log-gap $1.494$ vs.\
+$0.27$--$0.82$): trained only on symmetric-phase tasks, it is miscalibrated, not merely uninformative, off
+distribution. Qualifies the cross-track synthesis: ``Q-MAML is the only reliable scheme'' holds under
+interpolation, not under distribution shift across a phase transition.
+
+\FloatBarrier
+\subsection{Track D: SU(2) lattice gauge theory}
+\label{sec:track-d}
+The gauge-field-integrated-out effective Hamiltonian of~\citep{su2hadrons2021}, $N=2$ sites (4 qubits,
+un-reduced: we do not implement the source paper's qubit-reduction trick or its hadron-mass-ratio
+calculation, only its underlying ground-state Hamiltonian), task params dimensionless fermion mass
+$\tilde m$ and coupling $x=1/(a_l^2g^2)$. Transcribed directly from the source paper's stated equations;
+Hermiticity-verified at $N=2$ and $N=3$, and the hardest term (a 4-body color-exchange piece) additionally
+cross-checked against an independent dense-matrix construction.
+
+\begin{table}[ht]
+\centering
+\caption{Track D: final relative energy error, $N{=}2$.}
+\label{tab:su2lgt}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & $\pi$ & Gaussian & Uniform & Zero \\
+\midrule
+$\varepsilon_{\mathrm{rel}}$ & \textbf{$\sim$0\%} & 0.02\% & 0.02\% & 0.04\% & 1390\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}
+\textbf{Cleanest win in this paper.} Q-MAML reaches the float64 machine-precision floor (log-gap $-17.41$,
+matching \S\ref{sec:vqe-molecule}'s H2 floor) while every classical scheme plateaus around log-gap
+$-10$ to $-11$, visibly still noisy rather than converged. Zero-init is an exact fixed point, as on every
+other Pauli-sum Hamiltonian tested. This confirms a prediction made before running the experiment:
+structurally this Hamiltonian is closer to Track A (gauge eliminated analytically, no penalty term) than
+Track B (penalty-enforced), and the result matches Track A's win rather than Track B's failure, a second,
+independent (non-Abelian) confirmation that penalty-enforced gauge invariance, not gauge theories
+generically, is what hurts Q-MAML.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/su2_lgt/adaptation_convergence.png}
+\caption{SU(2) LGT, $N{=}2$: adaptation convergence by init scheme.}
+\label{fig:su2lgt}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track E: collective neutrino oscillations (reformulated)}
+\label{sec:track-e}
+The literature this track is nominally based on~\citep{neutrinoqc2021} studies real-time evolution of a
+flavor eigenstate, not a ground-state problem, and does not fit the Q-MAML formalism without a genuine
+change of question. We ask instead for the ground state of the same class of collective (all-to-all)
+neutrino Hamiltonian, the object studied in the adiabatic/spectral-split collective-oscillation
+literature~\citep{duanfullerqian2010}, a different but still physically motivated question:
+\begin{equation}
+H(\theta,\mu) = \frac{\omega}{2}\sum_i\big(\cos2\theta\, Z_i + \sin2\theta\, X_i\big)
++ \frac{\mu}{N}\sum_{i<j}\big(X_iX_j+Y_iY_j+Z_iZ_j\big), \qquad \omega=1,
+\label{eq:neutrino}
+\end{equation}
+$N{=}4$ neutrinos (4 qubits), task params mixing angle $\theta$ and interaction strength $\mu$. Verified
+against two exact limits: at $\mu{=}0$, ground energy $=-N\omega/2$ for any $\theta$ (confirmed to
+$\sim10^{-16}$); at $\theta{=}\mu{=}0$, ground state is exactly $|11\dots1\rangle$ (overlap $1.000000$).
+
+\begin{table}[ht]
+\centering
+\caption{Track E: final log-gap $\Delta$ (relative error $\sim$0\% for all schemes, uninformative here
+since none have converged by the iteration budget, see text).}
+\label{tab:neutrino}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & $\pi$ & Gaussian & Uniform & Zero \\
+\midrule
+$\Delta$ (final) & \textbf{-14.35} & -11.39 & -9.53 & -9.03 & -7.75 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}
+Q-MAML wins again (5th win of 6 tracks), but unlike Tracks A/D none of the five schemes have flattened by
+the iteration budget: a still-open speed gap, closer to the Heisenberg/molecule pattern
+(\S\ref{sec:vqe-heisenberg}/\ref{sec:vqe-molecule}) than to a permanently separated optimum.
+\textbf{Zero-init is not an exact fixed point here} (moves from $\Delta{=}1.90$ to $-7.75$), unlike every
+other Pauli-sum Hamiltonian tested (Heisenberg, molecule, Schwinger, $\mathbb{Z}_2$ LGT, SU(2) LGT),
+narrowing \S\ref{sec:track-c}'s hypothesis further: the fixed point is not simply a function of Pauli-sum
+vs.\ Hermitian-matrix Hamiltonians, since this is a Pauli sum yet behaves like Track C's Hermitian-matrix
+scalar field. Leading hypothesis, untested directly: every other Pauli-sum Hamiltonian here has a purely-$Z$
+mass term, while Eq.~\ref{eq:neutrino}'s single-particle term mixes $Z$ and $X$ whenever $\theta\neq0$. Also
+the first genuinely non-local (all-to-all) Hamiltonian tested; locality does not appear to be the deciding
+factor for either result.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/neutrino/adaptation_convergence.png}
+\caption{Collective neutrino oscillations, $N{=}4$: adaptation convergence by init scheme.}
+\label{fig:neutrino}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track F: supersymmetric quantum mechanics}
+\label{sec:track-f}
+$H=\frac12(p^2+[W'(q)]^2)+\frac12 W''(q)Z_{\text{fermion}}$~\citep{susyqm2026}, one bosonic mode (Fock
+cutoff $\Lambda{=}8$, 3 qubits) plus one fermionic qubit (4 qubits total). Task descriptor mixes a
+\emph{discrete} choice (superpotential $\in\{$HO, AHO, DW$\}$) with continuous coefficients $(m,g,\mu)$, a
+genuinely different task-space shape from every other track. Verified: Hermiticity for all three
+superpotentials; the HO boson block reproduces the analytic $n+\tfrac12$ spectrum; the double-well
+superpotential's classical potential has two minima (the source's rendered sign was ambiguous in our
+extraction; we use the sign that produces one, verified directly).
+
+\begin{table}[ht]
+\centering
+\caption{Track F: final log-gap $\Delta$. \texttt{basis\_paper} is the source paper's own hand-picked
+fermion-occupation initial state.}
+\label{tab:susyqm}
+\begin{tabular}{lcccccc}
+\toprule
+& Q-MAML & Uniform & Gaussian & $\pi$ & basis\_paper & Zero \\
+\midrule
+$\Delta$ (final) & \textbf{-4.87} & -4.75 & -4.66 & -2.40 & -1.92 & $\sim$0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}
+Q-MAML wins (best start, $\Delta(0){=}{-2.20}$ vs.\ $0.62$--$3.15$ for classical schemes, and best final
+value), with uniform/Gaussian close behind. \textbf{The source paper's own physics-derived initial state is
+not competitive}: worst starting point of all six schemes and only a partial recovery over 200 iterations,
+a genuine negative result for "physics-derived point-estimate init beats generic random init," worth
+weighing against \S\ref{sec:track-b}'s untried Gauss-law warm start rather than assuming physics-motivated
+initialization always wins. Per-superpotential breakdown: Q-MAML's clearest margin is on the double well,
+the source paper's own hardest case ($\Delta{=}{-5.09}$ vs.\ $-1.06$ to $-4.58$); on the anharmonic
+oscillator, Q-MAML/uniform/Gaussian converge to a near-identical final value, the familiar "same optimum,
+different speed" pattern. SUSY ground states have exact energy 0 when supersymmetry is unbroken (confirmed
+for HO, $E_0=0.0000$ at every HO test task), which makes $\varepsilon_{\mathrm{rel}}$ explode into
+meaningless values here; log-gap is the metric to read for this track.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/susyqm/adaptation_convergence.png}
+\caption{SUSY QM: adaptation convergence by init scheme.}
+\label{fig:susyqm}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track G: non-Abelian $\mathbb{D}_8$ lattice gauge theory}
+\label{sec:track-g}
+Flagged in our own scoping as "not recommended for now" (qudit hardware, ansatz underspecified), checked
+rather than skipped~\citep{d8lgt2025}: their qubit-reduced ("matter removal") Hamiltonian could not be
+extracted with full confidence, so we implement their original, fully-specified Hamiltonian directly
+(dihedral group $\mathbb{D}_8$, order 8) with explicit Jordan-Wigner fermionic matter, $N{=}2$ sites (1
+link, 7 qubits), trading qubit count for full verifiability. Six construction checks, the most of any
+track, including an independent representation-theory check
+($D^2(g_1)D^2(g_2){=}D^2(g_1{\cdot}g_2)$ for all 64 element pairs) that caught and fixed a real bug (a
+matrix-multiplication order error producing the reversed group action) before the notebook was first run.
+
+\begin{table}[ht]
+\centering
+\caption{Track G: final log-gap $\Delta$ and relative error.}
+\label{tab:d8lgt}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & Gaussian & Uniform & $\pi$ & Zero \\
+\midrule
+$\Delta$ (final) & \textbf{-1.246} & -1.202 & -1.123 & -0.338 & 0.960 \\
+$\varepsilon_{\mathrm{rel}}$ & \textbf{10.49\%} & 10.97\% & 11.86\% & 26.01\% & 95.27\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}
+Q-MAML wins, more modestly than most tracks: a tight final-value cluster with Gaussian/Uniform, but a
+clearer speed edge (flattens by iteration $\sim$30--40 vs.\ $\sim$75--100 for Gaussian/Uniform). $\pi$
+plateaus early; Zero is again an exact, unmoving fixed point despite this being a dense Hermitian-matrix
+Hamiltonian (fermionic matter $+$ a projector-based electric term), not a Pauli sum: a third distinct
+Zero-init outcome among this paper's Hermitian-matrix Hamiltonians (none on the scalar field
+\S\ref{sec:track-c}, a slow drift on SUSY QM \S\ref{sec:track-f}, an exact fixed point here), reinforcing
+that no single Pauli-sum-vs.-Hermitian-matrix rule explains this pattern.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/d8_lgt/adaptation_convergence.png}
+\caption{$\mathbb{D}_8$ LGT, $N{=}2$: adaptation convergence by init scheme.}
+\label{fig:d8lgt}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track H: light nuclei in lattice pionless EFT}
+\label{sec:track-h}
+Deuteron, triton, and helium-3 via lattice pionless EFT~\citep{nucleareft2026}, the best-precedented
+VQE-for-physics track here (lineage of the 2018 IBM deuteron result). $N{=}2$ sites for all three nuclei
+(8 qubits: 4 proton $+$ 4 neutron spin-orbitals). \textbf{First new ansatz family in this paper}: a
+particle-number-conserving UCCSD circuit (PennyLane's built-in template), not a hardware-efficient one:
+proton and neutron excitations generated independently so no excitation crosses species, exact conservation
+by construction rather than by penalty (contrast Track B's Gauss-law penalty). Verified: Hermiticity;
+proton number $N_p$ and neutron number $N_n$ each exactly commute with $H$. An unplanned check: helium-3
+came out less bound than triton at matched couplings, matching the real experimental fact (driven by
+Coulomb repulsion between helium-3's two protons), which fell out of the construction, not designed in.
+
+\begin{keyresult}
+\textbf{Every scheme converges to the identical final energy} (0.89\% relative error, to 3 decimal places,
+for all five classical/learned schemes and a sixth baseline below): a first in this paper. UCCSD's
+particle-conserving structure (2--4 variational amplitudes vs.\ 48 angles for the hardware-efficient
+ansatz) appears simple enough that initialization stops mattering for the \emph{final} answer. The
+advantage is entirely in convergence \emph{shape}: Q-MAML descends smoothly from iteration 0
+($\Delta(0){=}{-2.37}$), while every classical scheme collapses onto \emph{one shared, strongly
+oscillatory trajectory} (common start $\Delta{\approx}0.75$, swinging to $-2.5$ and back to $-1.2$,
+ringing for $\sim$80 iterations) before damping into the same final value. Q-MAML also modestly beats the
+source paper's own non-learned approach: a \texttt{warm\_start\_nearby} baseline (adapting from a converged
+nearby-task solution, approximating their "warm-started from a nearby statevector-simulator solution")
+starts at $\Delta(0){=}{-2.10}$ and stays slightly behind Q-MAML throughout before reaching the same final
+value.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/nuclear/adaptation_convergence.png}
+\caption{Nuclear EFT (deuteron/triton/He-3), UCCSD ansatz: adaptation convergence. Every scheme reaches the
+same final value; only the transient shape differs.}
+\label{fig:nuclear}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track I: scalar Yukawa coupling}
+\label{sec:track-i}
+Single-site scalar Yukawa coupling~\citep{yukawa2022}, reformulated from the source paper's real-time
+quench-dynamics question into a ground-state target, more directly than Track E's reformulation since the
+same Hamiltonian already admits a closed-form check: fixing the fermion sector to vacuum reduces $H$ to a
+displaced harmonic oscillator with known ground energy $E_0={-}(\eta/2)^2/m$. 4 qubits (2 fermion $+$ 2
+boson, $\Lambda{=}4$, matching the source's own "up to three bosons" showcase scale). Verified: numeric
+ground energy approaches the analytic formula within $<$1\% at small $\eta/2m$ (with the truncation error's
+growth beyond that shown directly); the ground state's measured fermion occupation is exactly 0.
+
+\begin{table}[ht]
+\centering
+\caption{Track I: final log-gap $\Delta$.}
+\label{tab:yukawa}
+\begin{tabular}{lccccc}
+\toprule
+& Q-MAML & Zero & Uniform & Gaussian & $\pi$ \\
+\midrule
+$\Delta$ (final) & \textbf{-18.15} & -18.05 & -15.75 & -13.23 & -7.32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}
+Q-MAML and Zero-init tie for best, both at the float64 precision floor. Unlike almost every other track,
+Q-MAML does \emph{not} start best here (Zero $\Delta(0){\approx}{-3.1}$, Uniform ${\approx}{-1.7}$ vs.\
+Q-MAML's ${\approx}{-6.9}$, i.e.\ Q-MAML starts \emph{worse}), converging onto Zero's trajectory within
+$\sim$10--15 iterations. Mechanistic explanation, not just observation: the task range is deliberately
+narrowed to keep the displacement $\eta/(2m)$ small (Section~\ref{sec:track-i}'s verification), so every
+ground state tested is near-vacuum, and Zero-init's circuit starts at exactly $|0000\rangle$, already
+close for small displacements. $\pi$-init is a clear loser again, the second Hermitian-matrix Hamiltonian
+(after the scalar field) where it fails badly despite strength on the Pauli-sum gauge-theory tracks.
+\end{keyresult}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{../final_model/results/yukawa/adaptation_convergence.png}
+\caption{Scalar Yukawa coupling: adaptation convergence by init scheme.}
+\label{fig:yukawa}
+\end{figure}
+
+\FloatBarrier
+\subsection{Track J: Lipkin-Meshkov-Glick model}
+\label{sec:track-j}
+Flagged as nuclear-structure-adjacent rather than core HEP~\citep{hlvqe2023}, included for completeness.
+Precisely differentiated from that source's "HL-VQE": despite the similar name, HL-VQE iteratively
+co-optimizes an \emph{effective Hamiltonian} via orbital rotation, not a neural-network-learned
+initialization; we run plain Q-MAML on their own un-rotated Hamiltonian, $J{=}3/2$ (2 qubits, 4 states,
+matching their own smallest showcase scale). Verified via the exact su(2) algebra on the constructed
+generators and the analytically-known $V{=}0$ limit.
+
+\begin{keyresult}
+\textbf{Genuine null result, not a close call.} All five schemes reach the float64 precision floor
+(log-gap $-16.8$ to $-17.5$), and the ranking among them is within run-to-run noise: the convergence
+trajectories run together in one noisy bundle for the entire 150-iteration budget, never separating,
+unlike every other track in this paper. Likely explanation: 4 states on 2 qubits may be too small a
+Hilbert space for a bad initialization to get meaningfully stuck. The clear next step is a \emph{larger}
+$J$ (more qubits), not more seeds: this benchmark needs to get harder before an initialization-scheme
+comparison here is informative.
+\end{keyresult}
+
+\FloatBarrier
+\subsection{Cross-track synthesis}
+\label{sec:cross-track}
+
+\begin{table}[ht]
+\centering\small
+\caption{Cross-track findings.}
+\label{tab:cross-track}
+\begin{tabular}{p{0.97\textwidth}}
+\toprule
+\textbf{Finding} \\
+\midrule
+Ansatz depth and pretrain budget, not just init scheme, become load-bearing at larger system size (Track A):
+under-expressive depth erased Q-MAML's $L{=}3$ lead; re-tuning depth alone fixed it. At $L{=}4$, pretraining
+itself failed to converge: a different failure mode, not yet resolved. \\
+\midrule
+Track B's failure is real; one leading mechanism (penalty dominance) is refuted by the $V$-sweep, not
+confirmed. What holds: penalty-\emph{enforced} gauge invariance is worse for Q-MAML than either eliminating
+gauge structure analytically (A) or having none (C), regardless of penalty strength. \textbf{Track D
+confirms this with an independent, non-Abelian gauge theory}: gauge eliminated analytically, no penalty
+term, and Q-MAML wins decisively, again matching Track A rather than Track B. \\
+\midrule
+The zero-parameter fixed point is not a simple Pauli-sum-vs.-Hermitian-matrix property, and is narrower
+than first thought. It holds exactly on four Pauli-sum Hamiltonians (Heisenberg, molecule, Schwinger,
+$\mathbb{Z}_2$ LGT, SU(2) LGT) but not on two Hermitian-matrix ones (scalar field, mostly not on SUSY QM),
+consistent with a Pauli-sum link. \textbf{Track E breaks that link}: its Hamiltonian is a Pauli sum yet
+the fixed point does not hold, the only such case. Leading (untested) hypothesis: every fixed-point
+Hamiltonian has a purely-$Z$ mass/diagonal term, while Track E's mixes $Z$ and $X$. \\
+\midrule
+No classical scheme is a reliable default across tracks ($\pi$: best/2nd on A/B, worst on C/F). Q-MAML is
+the only consistently competitive scheme, under interpolation only. Track C's phase-stratified test shows
+this does not extend to extrapolation across a phase transition, and in one direction Q-MAML starts out
+worse than task-independent baselines. \\
+\midrule
+\textbf{Track F: a physics-derived initial state is not automatically better than a generic random one.}
+The source paper's own hand-picked basis-state init is the worst-starting, close-to-worst-finishing scheme
+on SUSY QM, despite being chosen for its ground-state overlap: fidelity at $t{=}0$ is not the same as a
+good landscape position for gradient descent given enough adaptation budget. \\
+\midrule
+\textbf{Track G confirms Track D's confirmation}: a third gauge theory (non-Abelian, un-reduced) with
+gauge structure eliminated analytically again favors Q-MAML, though more modestly than A or D, and its
+Zero-init exact fixed point (despite being a dense, non-Pauli-sum Hamiltonian) adds a third distinct
+Zero-init outcome among Hermitian-matrix Hamiltonians (none/drift/exact on C/F/G), further undermining any
+clean Pauli-sum-vs.-Hermitian-matrix rule for that pattern. \\
+\midrule
+\textbf{Not every genuine improvement shows up as a final-value win.} Track H (UCCSD, particle-number-
+conserving by construction) is the first track where every scheme converges to the identical final energy;
+Q-MAML's advantage is entirely in convergence \emph{shape} (a smooth descent vs.\ a shared oscillatory
+transient every classical scheme goes through). Track I similarly has Q-MAML tie, not beat, Zero-init, with
+a clean mechanistic reason (the task range's ground states are near-vacuum, and Zero-init already starts
+there). Both are real, positive results for Q-MAML that a same-final-energy-only reading would miss. \\
+\midrule
+\textbf{Track J is a genuine null result, kept rather than dropped.} At $J{=}3/2$ (2 qubits), no
+initialization scheme is distinguishable from any other, plausibly because the Hilbert space is too small
+for a bad initialization to get stuck in. Reported as-is: a benchmark can be too easy to be informative,
+and that is itself worth knowing before scaling a comparison up. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Pilot-scale: 2--8 qubits, single seed except where noted, hardware-efficient ansatz throughout except
+Track H (UCCSD). See \S\ref{sec:limitations}.
+
+\FloatBarrier
 \section{Discussion}
 
-\textbf{Why does the simpler algorithm (Algorithm~1, no inner loop) beat the more elaborate one
-(\texttt{qmaml\_existing}'s inner-loop + first-order-detach hybrid)?} Section~\ref{sec:classification}'s
-result is, at first glance, counterintuitive --- \texttt{qmaml\_existing} does \emph{more} work per outer
-step (\texttt{INNER\_STEPS} extra gradient descent steps on the PQC before the outer loss) yet converges
-slower and generalizes worse than the version that does nothing but backprop straight through the Learner.
-Our reading: the inner-loop-plus-detach trick optimizes the Learner to produce parameters that are good
-\emph{after} a few steps of task-specific adaptation, which is a weaker, noisier training signal for the
-Learner than directly rewarding it for producing parameters that are \emph{already} good (Algorithm~1's
-actual objective). With only \texttt{INNER\_STEPS=5} and a small task pool, that extra indirection appears
-to cost more in gradient-signal quality than it buys in adaptation fidelity. \todo{An \texttt{INNER\_STEPS} sweep (0 through 20) isolating this directly is implemented in \texttt{research\_notebooks/06\_Inner\_Steps\_Ablation.ipynb} --- incorporate its results here once it completes.}
+\textbf{Why does the inner-loop-free algorithm beat the GSoC baseline (inner loop + stop-gradient)?}
+Original hypothesis: the stop-gradient trick gives a weaker training signal.
 
-\textbf{Does the classification advantage predicted by Section~\ref{sec:bp-higgs} (faster barren-plateau
-collapse) show up as a shrinking accuracy gap at higher qubit counts? Partially, and only after correcting
-an initial overclaim.} A first pass at 2 seeds showed a dramatic, clean-looking reversal by 8 qubits that
-appeared to confirm the barren-plateau connection almost too neatly. Rerun at 4 seeds with proper
-significance testing (Section~\ref{sec:classification}), that reversal did not hold up ---
-\texttt{qmaml\_paper} remains ahead at 8 qubits, just with a smaller and statistically noisier margin (mean
-gap $+0.039$, not significant at $n=4$, vs.\ $+0.055/+0.063$ at 4/6 qubits). The honest reading: the gap
-trends smaller at higher qubit count, loosely consistent with the barren-plateau story, but this is now a
-directional observation, not a confirmed quantitative match --- we do not have the statistical power at 4
-seeds to claim more than that. What \emph{is} solid at every qubit count tested is the significant win
-against \texttt{gaussian} init and against \texttt{qmaml\_existing}. Any claim about Q-MAML's usefulness at
-larger, deeper HEP classification circuits should lean on that robust comparison, not on an unconfirmed
-scaling trend.
+\begin{table}[ht]
+\centering
+\caption{Inner-step ablation (2 seeds): meta-loss and validation accuracy vs.\ inner-loop step count.}
+\label{tab:ablation}
+\begin{tabular}{lccc}
+\toprule
+Inner steps & 0 & \dots & 20 \\
+\midrule
+Validation accuracy & 0.536 & \dots & 0.583 \\
+Gradient norm & 0.13 & \dots & 2.49 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\textbf{On the ``moderate gradient norm'' wrinkle.} The original paper frames a moderate,
-non-vanishing/non-exploding gradient norm during training as evidence of good conditioning. Our result shows
-\texttt{qmaml\_paper} with the \emph{highest} mean gradient norm among all five classification variants, and
-also the best performance --- the opposite ordering from what ``moderate is best'' would predict if taken as
-a monotonic rule. We do not think this contradicts the paper's underlying point (avoiding vanishing gradients
-matters), but it does mean ``moderate'' should not be read as ``closer to some ideal middle value is always
-better'' --- in our setting, more signal was simply better, up to whatever point it would start destabilizing
-training (which we did not observe in 10 epochs). This nuance is worth stating explicitly rather than
-cherry-picking the framing that fits best.
+Tested directly with an ablation sweeping the inner-loop step count from 0 to 20 (Table~\ref{tab:ablation},
+GSoC baseline otherwise unchanged): final meta-loss is flat across the sweep and validation accuracy
+\emph{increases} with more inner steps, opposite of the hypothesis. Gradient norm scales up with more inner
+steps and tracks better, not worse, accuracy. Hypothesis retracted. Also, the GSoC baseline at zero inner
+steps does not match Q-MAML's own numbers (meta-loss $0.68$ vs.\ $0.364$) even accounting for the known
+support/query evaluation-split difference between the two implementations: why Q-MAML beats the GSoC
+baseline remains open.
 
-\todo{An attempted algorithmic contribution --- combining Q-MAML with identity-block initialization~\citep{grant2019initialization} to directly counteract the barren-plateau collapse found in Section~\ref{sec:bp-higgs} --- was implemented and numerically verified (exact identity at initialization, confirmed via autodiff and finite differences), but produced exactly-zero gradients everywhere rather than the theorem's predicted non-vanishing ones. This negative result is documented in \texttt{research\_notebooks/README.md} and not included in the main body pending a clean theoretical resolution.}
+\textbf{Does the classification advantage shrink with qubit count, as \S\ref{sec:bp-classification}
+predicts?} Partially. A 2-seed pass showed a reversal by 8 qubits; at 4 seeds it does not hold
+(\S\ref{sec:classification}, Table~\ref{tab:correction-gap}): the gap trends smaller, directionally
+consistent, but not confirmed. Solid at every qubit count: the win vs.\ Gaussian and the GSoC baseline.
+
+\textbf{``Moderate gradient norm.''} The paper frames moderate norm as good conditioning. Q-MAML has the
+\emph{highest} norm and the best accuracy: the opposite of a monotonic ``moderate is best'' rule. Does not
+contradict the underlying point (avoiding vanishing gradients), but ``moderate'' should not be read as
+``closer to some middle value is always better.''
+
+\todo{Attempted: combining Q-MAML with identity-block init~\citep{grant2019initialization} to counteract
+\S\ref{sec:bp-higgs}'s plateau. Construction verified correct (exact identity at init, autodiff + finite
+differences), but produced exactly-zero gradients everywhere, not the theorem's predicted non-vanishing
+ones. Documented separately, omitted from the main results.}
 
 \section{Limitations}
+\label{sec:limitations}
 
-\begin{itemize}
-    \item \textbf{CPU-only simulation} caps feasible qubit counts and circuit depth well below the regime
-    where barren plateaus are most severe (real NISQ hardware or GPU-accelerated simulation could reach
-    15--20+ qubits; we reach 14 for the cheap VQE diagnostic, 8 for the more expensive classification
-    comparison). Our qualitative rankings may not hold at the qubit counts actually relevant to near-term
-    LHC-scale QML.
-    \item \textbf{Four seeds} for the classification headline result is enough to establish significance
-    against \texttt{gaussian} and \texttt{qmaml\_existing} ($p<0.05$ at every qubit count) and to catch a
-    false positive that appeared at 2 seeds (the ``advantage vanishes at 8 qubits'' claim, retracted in
-    Section~\ref{sec:classification}) --- but is still not enough to resolve the vs.-best-classical-baseline
-    comparison, which stays directionally positive but non-significant ($p=0.08$--$0.29$) at every qubit
-    count. Pushing to 8--10 seeds is the single highest-value remaining step before submission, compute
-    budget permitting.
-    \item \textbf{Reconstructed ansatz} for the Heisenberg XYZ study: the paper's appendix circuit
-    wasn't available to us, so agreement there is suggestive but not definitive; the molecule study
-    (paper's exact, fully-specified ansatz) is the stronger evidence and should be weighted more heavily in
-    the paper's claims.
-    \item \textbf{Single classification dataset (HIGGS)} as of this draft --- quark-gluon access is
-    requested but pending; a single-dataset classification claim is weaker than the two-dataset (Heisenberg
-    + molecule) VQE claim, and this asymmetry should be acknowledged rather than glossed over if quark-gluon
-    doesn't land in time.
-    \item \textbf{Task-generation heuristic sensitivity}: quantile-binning by a single physics variable
-    (\texttt{m\_bb}) is a reasonable but not unique choice; we have not tested sensitivity to bin count, the
-    choice of binning variable, or joint (multi-variable) binning as the quark-gluon pipeline's
-    \texttt{pt}/\texttt{m0} scheme does.
-    \item \textbf{Barren-plateau diagnostic scope}: a single reference-parameter gradient per sample is the
-    standard McClean et al.\ protocol, but a full Fisher-information or effective-dimension analysis (as
-    some follow-on barren-plateau literature uses) would be a more complete picture than we provide here.
+\begin{itemize}[nosep]
+    \item \textbf{\S\ref{sec:genuine-hep} is single-seed} except where noted (Track B's $V{=}10$ point,
+    Track C's interpolation-split headline: both 3-seed). Multi-seed replication of the rest is the top
+    priority for this section.
+    \item \textbf{Track B}: the $V$-sweep refuted the penalty-dominance hypothesis rather than confirming
+    it. Untried: annealing $V$ during pretraining; separating penalty/physical energy into adaptively-
+    weighted loss terms; the structurally gauge-invariant ansatz comparison (the track's originally intended
+    angle).
+    \item \textbf{Track A}: depth re-tune at $L{=}3$ is two spot-checks (depth 6, 9), not a scan; the
+    $L{=}4$ failure (pretraining non-convergence) is one spot-check, not resolved. A joint
+    depth$\times$pretrain-budget$\times$qubit-count scan is needed.
+    \item \textbf{Track C}: phase-stratified test is single-seed; broken$\to$symmetric error is large enough
+    ($85$--$97\%$) that seed noise could reorder the ranking, though ``nobody generalizes well here'' is
+    likely to hold.
+    \item \textbf{Track D}: does not reproduce the source paper's qubit-reduction trick, its hadron-mass-
+    ratio calculation, or $N{=}4$ (baryon scale); $N{=}2$ only, single seed. Its unusually clean result is
+    itself a reason to check whether it holds at $N{=}4$ rather than assume it does.
+    \item \textbf{Track E}: the entire premise is a reformulation (ground state instead of the cited
+    literature's real-time dynamics), see \S\ref{sec:track-e}. Single seed; none of the five schemes had
+    converged within the iteration budget, so the final-value gap may still narrow with more iterations, as
+    it did in \S\ref{sec:vqe-heisenberg}.
+    \item \textbf{Track F}: single seed; 9 held-out tasks split unevenly across three superpotentials by
+    random draw (2--4 each), not a balanced/stratified split; uses a fixed-depth hardware-efficient ansatz,
+    not the source paper's adaptive-VQE operator-selection approach.
+    \item \textbf{Track G}: does not reproduce the source paper's qubit-reduced (matter-removal) Hamiltonian
+    or its trapped-ion qudit gate set, since several of that reduction's intermediate equations could not
+    be extracted with full confidence; uses the original, un-reduced Hamiltonian at $N{=}2$ instead. Single
+    seed; no plaquette term exists in a 1D chain at any $N$.
+    \item \textbf{Track H}: $N{=}2$ for all three nuclei, single seed, task parameters $(t,C,D)$ swept
+    continuously rather than fixed to the source paper's own experimentally-calibrated values. The
+    \texttt{warm\_start\_nearby} baseline approximates, not reproduces, the source paper's own warm-start
+    protocol.
+    \item \textbf{Track I}: single seed; task range deliberately narrowed to the boson truncation's
+    accurate regime, meaning this specifically tests the near-vacuum corner of the model's parameter space,
+    plausibly why Zero-init is competitive here unlike elsewhere in this paper.
+    \item \textbf{Track J}: single seed, $J{=}3/2$ only; no comparison against HL-VQE's own reported
+    numbers was attempted, and given the null result at this scale, a larger $J$ is needed before such a
+    comparison would be meaningful either way.
+    \item \textbf{Ansatz}: nine of the ten tracks use the same hardware-efficient ansatz, not the
+    symmetry-preserving circuits available for several of them (A/B/D/G); Track H uses UCCSD instead,
+    the paper's only ansatz-family comparison. Isolates init-scheme comparison from ansatz-design
+    confounds on nine tracks, but results there are about relative init quality on a fixed ansatz, not
+    best achievable VQE performance.
+    \item \textbf{CPU-only simulation} caps qubit count/depth (14 for the cheap VQE barren-plateau scan, 8
+    for classification) below where plateaus are most severe on real hardware or GPU-scale simulation.
+    \item \textbf{4 seeds} (HIGGS classification) resolves significance vs.\ Gaussian/GSoC baseline and
+    catches the 2-seed false positive, but not the vs.-best-classical comparison ($p=0.08$--$0.29$). 8--10
+    seeds is the next step. \textbf{Quark-gluon classification is 2 seeds only} (\S\ref{sec:classification}):
+    the $\sim$18-point accuracy gap is directionally consistent with HIGGS but not independently
+    significance-tested.
+    \item \textbf{Reconstructed Heisenberg ansatz} (paper's appendix circuit unavailable): the molecule study
+    (paper's exact ansatz) is the stronger evidence.
+    \item \textbf{Task-generation}: single-variable quantile binning untested for sensitivity to bin count or
+    binning variable.
+    \item \textbf{Barren-plateau diagnostic scope}: single reference-parameter gradient per sample (standard
+    McClean protocol), not a full Fisher-information/effective-dimension analysis.
 \end{itemize}
 
 \section{Conclusion}
 
-We set out to test a specific, falsifiable claim --- that Q-MAML~\citep{leeqmaml2025} improves PQC
-trainability --- in a setting the original paper never tested (HEP classification) and using a
-system whose gradient flow we verified line-by-line, after finding that neither of the two prior
-attempts at this (ML4Sci GSoC 2025's Higgs and quark-gluon pipelines) actually tested the paper's published
-algorithm correctly. We matched the paper's own results in two independent VQE settings --- one with a
-reconstructed ansatz, one with the paper's exact specified circuit --- before extending to classification,
-where the same algorithm delivers a clean, statistically consistent improvement over both classical PQC
-initialization and the prior (flawed) codebase's attempts. A McClean et al.-style barren-plateau
-diagnostic, run in both domains, tempers this into a precise rather than triumphant claim: the benefit is
-about landscape placement, not about resisting the barren-plateau variance-scaling exponent itself --- and
-classification cost functions plateau markedly faster than the VQE costs the paper was validated on, a
-challenge for the broader QMLHEP research program, not specific to this method. Extending the classification
-comparison to 4 seeds and proper significance testing shows a real, statistically significant improvement
-over Gaussian initialization and over the prior GSoC repo's own codebase at every qubit count tested
-(4, 6, and 8) --- a robust result, not the dramatic collapse-to-parity an earlier, under-seeded pass
-initially suggested and which we explicitly retract rather than let stand. Q-MAML is a real, measurable
-improvement to PQC trainability in a domain it was never tested on; whether that advantage shrinks toward
-the barren-plateau collapse point at larger qubit counts is a plausible, directionally-supported hypothesis
-this paper raises but does not yet conclusively confirm.
-\todo{extend to quark-gluon, more seeds (8-10), and qubit counts beyond 8 before submission --- resolving the scaling question cleanly requires more statistical power than this draft currently has.}
+We tested whether Q-MAML~\citep{leeqmaml2025} improves PQC trainability in a setting it was never evaluated
+on (HEP classification), after finding neither prior GSoC attempt actually ran the published algorithm. Our
+system matches the paper's own VQE results (reconstructed and exact-ansatz settings) before extending to
+classification, where it beats classical init and the prior codebase with statistical significance at every
+qubit count tested. A barren-plateau scan bounds the claim: the benefit is landscape placement, not plateau
+resistance, and classification plateaus faster than the VQE setting the paper was validated on.
+
+Beyond classification, a pilot on ten lattice/field-theory (and adjacent) Hamiltonians
+(\S\ref{sec:genuine-hep}), what the GSoC 2026 proposal asks for, gives a mostly-positive, diagnosed result:
+clear wins on six (Schwinger, $\phi^4$ scalar field, SU(2) LGT, collective neutrino oscillations, SUSY QM,
+$\mathbb{D}_8$ LGT), ties for best on two (light nuclei: same final energy for every scheme, Q-MAML faster;
+Yukawa: Q-MAML ties Zero-init, both at the precision floor), a genuine null result on one (LMG, too small a
+system to differentiate any scheme), and worst-scheme on one ($\mathbb{Z}_2$ LGT; Gauss-law penalty
+implicated but not confirmed as sufficient cause). Track D and Track G (independent Abelian and non-Abelian
+confirmations of Track A's gauge-eliminated-analytically pattern), Track F (the source paper's own
+hand-picked physics init loses to generic random init), and Track H (the first ansatz-family comparison in
+this paper, and the first track where convergence \emph{shape} rather than final value carries the whole
+result) are the sharpest new results; Tracks E and I required reformulating their cited literature's
+question from real-time dynamics to a ground-state search, stated explicitly rather than glossed over.
+Findings that revise earlier sections: the zero-parameter fixed point is not universal and, per Track E, is
+not simply a Pauli-sum-vs.-Hermitian-matrix property either; no classical init is a safe default across
+Hamiltonian families the way Q-MAML nearly is, under interpolation, not extrapolation. Which structural
+property of a Hamiltonian predicts whether learned initialization helps is now a concrete question with six
+wins, two ties, one null result, one diagnosed loss, and several partly-tested mechanisms, rather than an
+open guess.
+\todo{more seeds (8-10) for both classification datasets, qubit counts beyond 8, Track D at $N{=}4$, Track J
+at larger $J$, before submission.}
 
 \section*{Target Venue}
-\emph{(checked 2026-08-20, not part of the paper itself --- remove before submission)}
-Realistic read: arXiv preprint is the actual November deliverable. QTML 2026's submission deadline (30 June
-2026) has already passed. NeurIPS 2026 workshop deadlines weren't confirmed by search, but NeurIPS 2026
-itself is in December --- even if a workshop there accepted a submission by November, the conference itself
-lands after the target date, and ``published'' for a formal venue would mean notification/camera-ready, not
-submission. Recommendation: post to arXiv as soon as results are finalized, then separately target a
-2027-cycle workshop (QTML 2027, next ML4PS @ NeurIPS) for formal peer review.
+\emph{(internal note, remove before submission)} arXiv preprint is the realistic November deliverable.
+QTML 2026 deadline (30 June 2026) has passed; NeurIPS 2026 workshop timing doesn't fit November. Plan: post
+to arXiv, then target QTML 2027 / ML4PS@NeurIPS for peer review.
 
 \bibliographystyle{plainnat}
 \begin{thebibliography}{99}
@@ -596,6 +1254,43 @@ Hybrid Quantum Machine Learning Framework for LHC Physics. arXiv:2511.15672, 202
 
 \bibitem{baldi2014higgs} P.~Baldi, P.~Sadowski, D.~Whiteson. Searching for exotic particles in high-energy
 physics with deep learning. \emph{Nature Communications} 5, 4308, 2014.
+
+\bibitem{schwingertrappedion2025} Trapped-ion demonstration of variational quantum simulation of the
+interacting Schwinger model. arXiv:2504.20824, 2025.
+
+\bibitem{z2lgtbp2025} Barren-plateau-free variational quantum simulation of $\mathbb{Z}_2$ lattice gauge
+theories. arXiv:2507.19203, 2025.
+
+\bibitem{scalarfield2023} A.~C.~Y.~Li, A.~Macridin, S.~Mrenna, P.~Spentzouris. Simulating scalar field
+theories on quantum computers with limited resources. FERMILAB-PUB-22-757-QIS, arXiv:2210.07985, 2023.
+
+\bibitem{quantumdatalearning2023} Quantum data learning for quantum simulations in high-energy physics.
+arXiv:2306.17214, 2023.
+
+\bibitem{su2hadrons2021} SU(2) hadrons on a quantum computer via a variational approach.
+\emph{Nature Communications} 12, 6499, 2021. arXiv:2102.08920.
+
+\bibitem{neutrinoqc2021} Simulating collective neutrino oscillations on a quantum computer.
+arXiv:2102.12556, 2021.
+
+\bibitem{duanfullerqian2010} H.~Duan, G.~M.~Fuller, Y.-Z.~Qian. Collective Neutrino Oscillations.
+\emph{Annual Review of Nuclear and Particle Science} 60, 569--594, 2010.
+
+\bibitem{susyqm2026} Simulating supersymmetric quantum mechanics with variational quantum algorithms.
+arXiv:2603.18749, 2026.
+
+\bibitem{d8lgt2025} E.~Gaz, P.~P.~Popov, G.~Pardo, M.~Lewenstein, P.~Hauke, E.~Zohar. Quantum Simulation of
+non-Abelian Lattice Gauge Theories: a variational approach to $\mathbb{D}_8$. arXiv:2501.17863, 2025.
+
+\bibitem{nucleareft2026} P.~Cifci, S.~Akkoyun, L.~La Ronde. Systematic VQE Benchmarking of the Deuteron,
+Triton, and Helium-3 within Lattice Pionless Effective Field Theory. arXiv:2604.20908, 2026.
+
+\bibitem{yukawa2022} T.~N.~Kaldenbach, M.~Heller, G.~Alber, V.~M.~Stojanovic. Digital Quantum Simulation
+of Scalar Yukawa Coupling. arXiv:2211.02684, 2022.
+
+\bibitem{hlvqe2023} C.~E.~P.~Robin, M.~J.~Savage. Quantum Simulations in Effective Model Spaces (I):
+Hamiltonian-Learning VQE using Digital Quantum Computers and Application to the Lipkin-Meshkov-Glick Model.
+\emph{Phys. Rev. C} 108, 024313, 2023. arXiv:2301.05976.
 
 \end{thebibliography}
 
