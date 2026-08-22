@@ -150,6 +150,26 @@ def param_shape(depth: int, num_qubits: int = NUM_QUBITS) -> Tuple[int, int, int
     return (depth, num_qubits, 3)
 
 
+def vacuum_prep() -> None:
+    """Applies the Gauss-law vacuum (zero-charge sector, strong-coupling limit)
+    state-prep gates directly to whatever qnode is currently being traced: PauliX
+    on every matter site with ETA=-1 (checkerboard staggering) and Hadamard on
+    every link qubit. This is arXiv:2507.19203's own stated warm start ("alternating
+    X gates take into account the staggered fermions" + "Hadamard gate H acting on
+    each of the link qubits"), not our own invention: at mu->infinity (electric term
+    dominates), the ground state has every link in the X=+1 eigenstate |+>; with
+    G_l = eta_l * Z_site * X_link1 * X_link2 and X_link=+1, satisfying G_l=+1
+    (zero-charge sector) forces Z_site = eta_l, i.e. |0> where eta=+1 and |1> where
+    eta=-1 -- exactly this state. Verified numerically to give <G_l>=+1.000000
+    exactly at every matter site (external script, not committed test)."""
+    import pennylane as qml
+    for site in MATTER:
+        if ETA[site] < 0:
+            qml.PauliX(site)
+    for link in LINKS:
+        qml.Hadamard(link)
+
+
 def verify_gauge_invariance(J=0.7, m=1.1, mu=0.9, V=10.0, atol=1e-8) -> bool:
     """Numerically checks G_l^2 = I and [H, G_l] = 0 for every site -- the physical
     correctness condition (local gauge invariance) for this construction."""
@@ -169,7 +189,7 @@ def verify_gauge_invariance(J=0.7, m=1.1, mu=0.9, V=10.0, atol=1e-8) -> bool:
 
 __all__ = [
     "z2_lgt_hamiltonian", "gauss_operator", "exact_ground_energy", "sample_task_space",
-    "param_shape", "verify_gauge_invariance", "NUM_QUBITS",
+    "param_shape", "verify_gauge_invariance", "vacuum_prep", "NUM_QUBITS", "MATTER", "LINKS", "ETA",
 ]
 
 if __name__ == "__main__":
