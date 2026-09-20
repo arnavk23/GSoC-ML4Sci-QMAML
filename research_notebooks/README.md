@@ -27,7 +27,19 @@ Read in this order:
    schemes converging to nearly the same final answer.
 5. **`03_Barren_Plateau_Scaling.ipynb`** — McClean et al.-style gradient-variance-vs-qubit-count diagnostic
    in the VQE domain. Result: no evidence Q-MAML changes the variance-scaling exponent; whatever advantage
-   it has is about landscape placement, not resisting the plateau itself.
+   it has is about landscape placement, not resisting the plateau itself. **A second, independent diagnostic
+   gives "landscape placement" quantitative teeth** (`final_model/run_fisher_info_probe.py`): the single-
+   reference-parameter gradient above can't distinguish "degenerate everywhere" from "degenerate along one
+   direction, rich along others," so this computes the quantum Fisher information matrix (PennyLane
+   `metric_tensor`, block-diagonal approximation) at sampled parameter points and summarizes it as an
+   effective dimension (participation ratio / parameter count). Qubits {4,6,8}, depth 3, Heisenberg XYZ
+   ansatz, 8 samples/point. **`qmaml` sits at consistently higher effective dimension (93-96% of max rank)
+   than `uniform` (68-69%) or `gaussian` (72-73%) at every qubit count, and the gap doesn't shrink with
+   qubit count** — if anything it widens slightly at 8 qubits. By this metric, `qmaml`'s init isn't just
+   comparable in gradient magnitude to classical schemes, it sits in a genuinely less-degenerate region of
+   parameter space — a distinction the single-coordinate gradient scan alone can't make. Reduced qubit range
+   (4-8 vs. 4-14) and sample count (8 vs. 80/point) for tractability, since `metric_tensor` is markedly more
+   expensive per sample than one gradient component.
 6. **`04_Barren_Plateau_Scaling_Higgs.ipynb`** — same diagnostic in the classification domain. Result: a much
    sharper, textbook barren plateau (~8 orders of magnitude, 4→10 qubits) than the VQE domain — classification
    cost functions plateau faster, a real challenge for the whole QMLHEP direction, not specific to Q-MAML.
@@ -43,7 +55,10 @@ Read in this order:
    split difference, meaning the real explanation for `qmaml_paper` beating `qmaml_existing` is still open —
    most likely the evaluation-split difference or another structural difference between the two code paths,
    not `INNER_STEPS` itself. The paper's Discussion section is updated to retract the original speculation
-   accordingly.
+   accordingly. **Section 8's multi-seed cells (written but not executed at the time of the initial writeup)
+   have since been run**: `qmaml` L=2 final relative error 0.18%±0.13% (3 seeds), vs. `pi` 0.22%±0.11% (a
+   close second, not a clean gap), `gaussian` 0.45%±0.19%, `uniform` 1.72%±0.31%, `zero` 311%±63% -- `qmaml`
+   wins or ties `pi` at every seed, confirming the L=2 headline is not a single-seed fluke.
 8. **`07_Schwinger_Model_QMAML.ipynb`** — the first test of Q-MAML on a genuine HEP Hamiltonian (not a
    classification dataset with an HEP label, and not a spin chain/molecule): the lattice Schwinger model
    (1+1D QED), task space `(m0, g)`. At MVP scale (`NUM_QUBITS=4`, L=2) this is the strongest generalization
@@ -70,7 +85,16 @@ Read in this order:
    count too, and a real depth-x-pretrain-budget scan (not single spot-checks) is needed before drawing any
    qubit-scaling conclusion beyond L=3. A systematic version of that scan, a symmetry-preserving ansatz, and
    cross-referencing notebook 08's Z2 LGT (a genuinely different, negative result — see below) are open
-   follow-ups in its Findings cell.
+   follow-ups in its Findings cell. **The L=4 failure was then scanned and resolved**
+   (`final_model/run_schwinger_l4_scan.py`; single seed, reduced protocol: 3 held-out tasks, 150 iterations,
+   so absolute numbers aren't comparable to the 31.81%/8.56% above, but the 40-epoch row reproduces the
+   original pretraining signature: mean energy 7.21, gradient norm 24.6). Two causes, not one: (1) more
+   pretrain epochs alone do nothing (24.5% -> 23.9% at 100 epochs, pretraining still stalled); (2) lowering
+   the pretrain learning rate 0.005 -> 0.002 fixes pretraining itself (mean energy -1.95, inside the true
+   ground-energy range; gradient norm 24 -> 7.9) but only modestly helps the adapted result (21.2%, still
+   behind `pi`'s 17.9%); (3) then raising depth 12 -> 18 at the same budget gives `qmaml` 2.43% vs. `pi`
+   8.65%, `uniform` 11.0%, `gaussian` 11.8% — the lead is back, 3.6x over `pi`. Caveats: depth 18 was only run
+   at lr 0.002 (untested whether lr 0.005 would still fail at depth 18), single seed, reduced protocol.
 
 9. **`08_Z2_LGT_QMAML.ipynb`** — Track B: a single-plaquette Z2 lattice gauge theory with dynamical matter
    (8 qubits, task space `(J, m, mu)`), the first genuinely different HEP Hamiltonian family in this project
@@ -92,6 +116,23 @@ Read in this order:
    (std 13.70%, per-seed 59.16%/30.01%/58.96%) vs. `uniform` 20.34%/`gaussian` 19.43%/`pi` 27.35% (all with
    much tighter std, 3-5%) — `qmaml`'s *best* seed is still worse than every classical scheme's *worst* seed,
    so the ranking holds seed-by-seed, though the exact severity of the gap varies considerably with seed.
+   **The gauge-invariant-ansatz follow-up was executed and it works** (`final_model/run_z2lgt_alt_ansatz.py`,
+   executing notebook cells 19-24 which had been written but never run): built `Z2LGTHVAPQC` (gauge-invariant
+   Hamiltonian-variational ansatz — each layer Trotterizes the *physical* Hamiltonian's own terms, so gauge
+   invariance is structural, not penalty-enforced) and `Z2LGTHWEffZZPQC` (a same-complexity control ansatz
+   that is *not* gauge-invariant), both starting from the Gauss-law vacuum, single seed, reduced budget (4
+   held-out tasks, 200 iterations, documented for tractability), then **replicated at 3 seeds**
+   (`final_model/run_verdict_changers_multiseed.py z2`). **On the gauge-invariant HVA, `qmaml` flips from
+   worst scheme to best at every one of three seeds**: 0.0022%+/-0.0011% mean relative error vs. 0.011-0.014%
+   for every classical scheme; per seed it is 3x-10x ahead of the best classical scheme (0.0031% vs. 0.0148%,
+   0.0029% vs. 0.0088%, 0.0007% vs. 0.0073%). Same qualitative pattern as Tracks A and D at N=2, which share
+   this track's penalty-free structural gauge invariance (Track G, also gauge-eliminated, replicated only to a
+   tie, so the pattern is not universal). **On the control ansatz, `qmaml` is indistinguishable from
+   `uniform`/`gaussian` at every seed** (2.58%+/-1.16% each) and `pi` is the control's most variable scheme
+   (best at seeds 0 and 2, worst at seed 1) — ruling out "any different ansatz helps". This supports
+   structural (not penalty-enforced) gauge invariance as the operative variable, but the two ansatze are
+   different published circuits, not a minimal pair, so this is the best-supported reading, not a controlled
+   ablation. Still at the reduced budget and one system size.
 10. **`09_Scalar_Field_QMAML.ipynb`** — Track C: phi^4 lattice scalar field theory (6 qubits, `N_SITES=2`,
     task space `(m0_sq, lambda0)`), the first bosonic Hamiltonian in this project — no gauge field, no
     fermion encoding, and (unlike Tracks A/B) H is a dense field-amplitude-basis matrix measured via
@@ -121,7 +162,19 @@ Read in this order:
     (Section 6) confirms both headline findings robustly**: `qmaml` 6.05%±1.60%, `zero` 6.12%±1.54% —
     essentially tied at every seed, confirming `zero` genuinely isn't stuck — while `uniform`/`gaussian` sit
     in the same tight ~6-7% cluster and `pi` is a robust, seed-independent outlier at 27.00%±9.09% (even its
-    best seed, 14.58%, is ~2x worse than every other scheme's worst seed).
+    best seed, 14.58%, is ~2x worse than every other scheme's worst seed). **The phase-stratified
+    (extrapolation) multiseed cell (Section 6's counterpart for the symmetric/broken-symmetry test, not the
+    interpolation-split above) had a real aggregation bug**: seed 0's stored value was one gap correctly
+    averaged over all 6 held-out tasks, but seeds 1 and 2 each appended 6 *individual per-task* values
+    instead of one seed-level average — so the notebook's own printed "mean ± std over 3 seeds" (n=13:
+    1 + 6 + 6) silently mixed one aggregate with twelve raw per-task numbers. Corrected and rerun
+    (`final_model/run_scalar_phase_multiseed_fixed.py`, per-seed aggregation applied uniformly): **both
+    directions replicate cleanly with proper 3-seed statistics.** Symmetric→broken: `qmaml` 2.23%±0.65%,
+    `zero`/`uniform`/`gaussian` a tight 1.78%±0.09% cluster, `pi` worst at 5.65%±0.74% — `qmaml` is clearly,
+    robustly *behind* the classical cluster here, confirming the single-seed finding with much tighter error
+    bars than the buggy pass gave. Broken→symmetric: every scheme fails badly (75-94%), `uniform` relatively
+    best (74.91%±9.44%), `qmaml` mid-pack (91.90%±1.19%, its own tightest spread) — "nobody generalizes well
+    here" holds robustly.
 
 11. **`10_QuarkGluon_QMAML.ipynb`** — generalization check for the classification-domain headline result
     (notebook 01b) on a second, physically distinct dataset: quark/gluon jet tagging (jet-substructure
@@ -161,7 +214,19 @@ Read in this order:
     advantage there. **Metric caveat surfaced explicitly**: SUSY ground states have exact energy 0 when
     supersymmetry is unbroken (confirmed for the HO case, `E0=0.0000` at every HO test task), which makes
     this project's usual mean-normalized relative-error percentage explode into meaningless values here —
-    log-gap is the metric to read for this track.
+    log-gap is the metric to read for this track. **3-seed replication (`final_model/multiseed_validate.py
+    --track susyqm`) softens the "wins cleanly" claim**: mean final log-gap over 3 seeds is `uniform`
+    -4.75+/-0.11, `qmaml` -4.48+/-0.57, `gaussian` -4.55+/-0.14 -- uniform's tighter spread actually edges
+    out qmaml's mean, driven by one weak qmaml seed (-3.67 vs. its other two seeds' -4.87/-4.90). `qmaml`
+    still wins head-to-head in 2 of 3 seeds and stays clearly ahead of `basis_paper`/`pi`/`zero` at every
+    seed -- the honest revision is "qmaml/uniform/gaussian form an indistinguishable top cluster," not
+    "qmaml wins." **Balancing the held-out split confirms the same conclusion a different way**
+    (`final_model/run_susyqm_stratified.py`, exactly 3 HO / 3 AHO / 3 DW instead of the original random 2-4
+    each, single seed): `gaussian` -7.99, `qmaml` -7.67, `uniform` -7.52 -- gaussian now edges out qmaml
+    slightly, reversing the original top two rather than just narrowing the gap. Per-superpotential, gaussian
+    also wins double well under the balanced split (-5.40 vs. qmaml's -3.80), so the original "qmaml's
+    clearest margin is on double well" claim doesn't survive a fairer split either. `basis_paper`/`pi` stay
+    clearly behind regardless of split, so that part of the finding is robust.
 
 13. **`12_SU2_LGT_QMAML.ipynb`** — Track D: SU(2) lattice gauge theory with dynamical matter (Atas, Zohar
     et al., Nature Communications 2021), N=2 (4 qubits, un-reduced Hamiltonian — does not reproduce the
@@ -177,10 +242,32 @@ Read in this order:
     other Pauli-sum Hamiltonian in this project. This confirms a mechanistic prediction made before running
     the notebook: structurally this Hamiltonian is closer to Track A (gauge eliminated analytically, no
     penalty term) than Track B (gauge invariance penalty-enforced), and the result matches Track A's
-    clean-win pattern rather than Track B's failure — a second, independent (non-Abelian) gauge theory with
+    clean-win pattern rather than Track B's failure -- a second, independent (non-Abelian) gauge theory with
     gauge eliminated analytically again favoring `qmaml` cleanly, strengthening the project's existing
     "penalty-enforced gauge invariance, not gauge theories generically, is what qmaml struggles with"
-    hypothesis.
+    hypothesis. **3-seed replication confirms this robustly**: `qmaml` reaches ~1e-7 relative error at
+    every seed, every classical scheme is 3-4 orders of magnitude worse at every seed, no seed reverses
+    the ranking. **Qubit-count extensions, N=3 (6 qubits, depth 4, 250 iters) and N=4 (8 qubits, depth 6, 300 iters),
+    3 seeds each, un-reduced Hamiltonian, Hermiticity-verified first** (`final_model/run_su2lgt_N4.py`,
+    `run_verdict_changers_multiseed.py su2`; an earlier version of this entry quoted the N=3 numbers as
+    percentages when they were fractions — corrected here). **N=3 is an "everyone fails" regime, not a
+    tie**: every scheme is at 200-500% relative error at every seed (`qmaml` 198/257/504%, `gaussian`
+    199/266/497%, `pi` 364/265/483%, `uniform` 400/252/494%, `zero` 810/515/1010%), i.e. nothing converges
+    at the depth-4/250-iteration budget carried over from N=2 — the comparison is uninformative, not
+    evidence init stops mattering. **N=4 is where `qmaml` becomes seed-unstable, not where it cleanly
+    loses**: `pi` converges to 4.2/6.0/3.5% (mean 4.6%+/-1.1%, best at 2 of 3 seeds), while `qmaml` is
+    23.3/2.9/450% (best at seed 1 by 2x over `pi`, catastrophic at seed 2; median 23.3% still trails `pi`).
+    Seed 0 alone would have read as a clear loss and seed 1 alone as a win. Untested: whether N=4's bad
+    seeds are pretraining failures fixable by a lower pretrain lr (as at Track A's L=4), and whether N=3 with
+    a converging budget restores a margin. Not the source paper's own reduced N=4 hadron-mass-ratio circuit.
+    **Follow-ups (`final_model/run_su2_followup.py`, 3 seeds each)**: (i) N=3 at depth 6 / 300 iters: every
+    scheme now converges (the depth-4 result was a budget artifact) and `pi` is best at every seed
+    (0.28%+/-0.07%), `qmaml` a stable second-tier scheme (2.02%+/-0.39%, 5.7x-8.9x behind `pi`; `uniform`
+    11.8%+/-7.7%, `gaussian` 9.8%+/-8.4%). (ii) N=4 with pretrain lr 0.002 and 100 epochs: `qmaml` 312% / 2.9% /
+    450% vs. 23.3% / 2.91% / 450.4% at the original setting — the Track A learning-rate fix does not help, and
+    seeds 1 and 2 match the original to four digits despite very different pretraining, cause unknown
+    (pretraining diagnostics not recorded; a same-basin explanation is untested). Net: `pi` is the reliable
+    scheme at N=3/4 and the N=2 advantage does not extend.
 
 14. **`13_Neutrino_QMAML.ipynb`** — Track E: collective (all-to-all) neutrino oscillations, N=4 neutrinos
     (4 qubits), task space (mixing angle θ, interaction strength μ). **Required a genuine reformulation,
@@ -202,7 +289,14 @@ Read in this order:
     term, while this one mixes Z and X in its single-particle term whenever θ≠0. This is also the project's
     first genuinely non-local (all-to-all, no lattice structure) Hamiltonian, and locality does not appear
     to be the deciding factor for either the `qmaml` win or the `zero`-fixed-point question, at least on
-    this one data point.
+    this one data point. **3-seed replication complicates the single-seed picture**: `qmaml` wins clearly
+    at 2 of 3 seeds (2-3 orders of magnitude better) but is only second-best at the third, behind `pi` --
+    consistent with none of the five schemes having converged within the 200-iteration budget, so
+    seed-to-seed variation in descent progress can reorder the final ranking. **New qubit-count extension,
+    N=6 (6 qubits, single seed, both exact limits re-verified)**: here the win is unambiguous and *larger*
+    than at N=4 (`qmaml` 1.1e-6 vs. `pi` 1.5e-4, `uniform` 3.3e-4, `gaussian` 7.6e-4, `zero` 1.58%),
+    suggesting the seed-1 ambiguity at N=4 is a slow-convergence artifact at that smaller size rather than
+    a sign the advantage weakens with scale.
 
 15. **`14_D8_LGT_QMAML.ipynb`** — Track G: non-Abelian D8 (dihedral group of order 8) lattice gauge
     theory (Gaz, Popov, Pardo, Lewenstein, Hauke & Zohar, arXiv:2501.17863), the one track this project's
@@ -224,7 +318,12 @@ Read in this order:
     not a Pauli sum — a third distinct `zero`-init outcome among this project's Hermitian-matrix
     Hamiltonians (no fixed point on the scalar field, a slow drift on SUSY QM, an exact fixed point here),
     reinforcing that no clean Pauli-sum-vs-Hermitian-matrix rule explains this pattern across any track
-    tested. No plaquette term exists in a 1D chain at any N.
+    tested. No plaquette term exists in a 1D chain at any N. **3-seed replication turns the "modest win"
+    into a tie**: mean final relative error `qmaml` 10.8%±3.7% vs. `uniform` 10.7%±3.2% -- indistinguishable
+    given the spread, with the two swapping places seed-to-seed. `gaussian` 12.1%±5.7% trails slightly;
+    `pi` 21.4%±4.0% and `zero` 93.9%±1.2% (consistently, catastrophically worst) stay clearly behind at
+    every seed. Honest finding: a tight three-way top cluster (qmaml/uniform/gaussian), not a clean qmaml
+    win.
 
 16. **`15_Nuclear_EFT_QMAML.ipynb`** — Track H: light nuclei (deuteron/triton/helium-3) in lattice
     pionless EFT (Cifci, Akkoyun & La Ronde, arXiv:2604.20908) — the best-precedented VQE-for-physics
@@ -245,7 +344,13 @@ Read in this order:
     iterations) before damping into the same final value. `qmaml` also modestly beats the source paper's
     own non-learned approach — a `warm_start_nearby` baseline (adapting from a converged nearby-task
     solution, approximating their "warm-started from a nearby statevector-simulator solution") starts and
-    stays slightly behind `qmaml` throughout.
+    stays slightly behind `qmaml` throughout. **3-seed replication is the strongest confirmation in this
+    project**: all five schemes agree on the final relative error to 4-5 significant figures at every seed
+    (0.885% / 1.409% / 2.025% for seeds 0/1/2, <0.001% spread across schemes within a seed) — the
+    identical-final-value finding is a structural property of the particle-conserving UCCSD ansatz, not a
+    single-seed coincidence. **Reproducibility oddity, flagged not hidden**: seed 2's pretraining took
+    ~10.6 hours vs. 1010s/473s for seeds 0/1 on identical hardware/hyperparameters — a second instance of
+    the large, unexplained per-seed slowdown already noted for notebook 10's quark-gluon run.
 17. **`16_Yukawa_QMAML.ipynb`** — Track I: scalar Yukawa coupling, single-site (Kaldenbach, Heller, Alber
     & Stojanovic, arXiv:2211.02684), reformulated from the source paper's real-time-quench-dynamics
     question into a ground-state VQE target — a simpler reformulation than Track E's, since the same
@@ -263,7 +368,11 @@ Read in this order:
     exactly $|0000\\rangle$, already close for small displacements, plausibly explaining both why `zero` is
     competitive and why `qmaml` (trained on the same narrow task distribution) learns something similar.
     `pi`-init is a clear loser again, as on Track C's scalar field (the two Hermitian-matrix Hamiltonians
-    where `pi` fails badly, despite strength on the Pauli-sum gauge-theory tracks).
+    where `pi` fails badly, despite strength on the Pauli-sum gauge-theory tracks). **3-seed replication
+    confirms the tie**: `qmaml` (2.55-2.71e-7) and `zero` (2.24-2.99e-7) stay tied at the precision floor
+    with overlapping ranges at every seed; `pi` is worst at every seed (0.55-2.42%); `uniform`/`gaussian`
+    sit consistently 1-2 orders of magnitude behind `qmaml`/`zero` but far ahead of `pi`. The near-vacuum
+    mechanism proposed above holds up seed-to-seed, not just at the one seed originally reported.
 
 18. **`17_LMG_QMAML.ipynb`** — Track J: Lipkin-Meshkov-Glick model, flagged in this project's own tracks
     document as nuclear-structure-adjacent rather than core HEP, included for completeness. Precisely
@@ -278,7 +387,18 @@ Read in this order:
     150-iteration budget, never separating, unlike every other track in this project. Likely explanation:
     4 states on 2 qubits may be too small a Hilbert space for a bad initialization to get meaningfully
     stuck. The clear next step is a **larger $J$** (more qubits), not more seeds — this benchmark needs to
-    get harder before an initialization-scheme comparison here is informative.
+    get harder before an initialization-scheme comparison here is informative. **3-seed replication
+    confirms the null result rather than resolving it**: every scheme at every seed lands in the
+    6e-9-6e-8 range, tighter than the schemes' own seed-to-seed spread -- init scheme explains less
+    variance than random seed does at this scale. **The larger-$J$ next step was tried and it does not fix
+    the benchmark** (`final_model/run_lmg_larger_j.py`, $J{=}3.5$ -- $2J{+}1{=}8$ states, 3 qubits, no
+    Hilbert-space padding needed, matching the original $J{=}1.5$ choice's own "no padding needed" reasoning;
+    Hermiticity/su(2)-algebra/$V{=}0$-limit re-verified before running; 3 seeds): every scheme still lands
+    at the float64 precision floor at every seed, no separation. This revises the diagnosis, not just the
+    qubit count: doubling the Hilbert space (4 states -> 8 states) was expected to give a bad initialization
+    room to get stuck, and it didn't, so "too small a Hilbert space" is not the operative explanation.
+    Whether even larger $J$ would eventually differentiate schemes, or this task family is just easy for VQE
+    regardless of size, is now the open question.
 
 **Also attempted and honestly reported as not working**: combining Q-MAML with identity-block
 initialization (Grant et al. 2019) to directly counteract the barren-plateau collapse found in notebook 04.
