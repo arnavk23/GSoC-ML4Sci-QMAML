@@ -1,0 +1,20 @@
+
+--- SU(2) LGT qubit-count extension: N=3 (6 qubits) ---
+  N=3 m_tilde=1.0 x=1.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=3 m_tilde=0.5 x=2.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=3 m_tilde=1.5 x=0.5: Hermiticity max|H-H^dag|=0.00e+00  OK
+[SU2LGT pretrain] epoch 1/40  meanE=2.2620  gradnorm=4.9124
+[SU2LGT pretrain] epoch 40/40  meanE=0.9322  gradnorm=0.5256
+  [su2lgt seed=0 N=3] pretrain 49.6s
+  [su2lgt seed=0 N=3] final rel err: {'qmaml': 1.9769606971730564, 'zero': 8.097338110273384, 'pi': 3.6407992404797813, 'uniform': 3.9984212410750444, 'gaussian': 1.9913213773568386}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\su2_lgt\adaptation_final_N3.json
+
+--- Neutrino qubit-count extension: N=6 (6 qubits) ---
+  Hermiticity (mu=0): max|H-H^dag|=0.00e+00
+  mu=0 ground energy: -3.000000 vs. analytic -N*omega/2=-3.000000  err=1.33e-15
+  theta=0,mu=0 ground state overlap with |11...1>: 1.000000
+[Neutrino pretrain] epoch 1/40  meanE=0.4127  gradnorm=4.7014
+[Neutrino pretrain] epoch 40/40  meanE=-2.6522  gradnorm=1.4356
+  [neutrino seed=0 N=6] pretrain 59.5s
+  [neutrino seed=0 N=6] final rel err: {'qmaml': 1.0811541934026624e-06, 'zero': 0.0158245164095254, 'pi': 0.0001461905209035626, 'uniform': 0.0003323704175114733, 'gaussian': 0.0007571915199887289}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\neutrino\adaptation_final_N6.json

@@ -1,0 +1,32 @@
+
+=== qubits=4 ===
+[VQE pretrain] epoch 1/15  meanE=-0.0589  gradnorm=94.8771
+[VQE pretrain] epoch 6/15  meanE=0.7839  gradnorm=99.6534
+[VQE pretrain] epoch 11/15  meanE=0.8769  gradnorm=113.5960
+[VQE pretrain] epoch 15/15  meanE=-0.2536  gradnorm=118.9400
+  pretrain 4.5s
+  qmaml    effective-dim (participation ratio / n_params): mean=0.9328 std=0.0113  n_params=27
+  uniform  effective-dim (participation ratio / n_params): mean=0.6828 std=0.0107  n_params=27
+  gaussian effective-dim (participation ratio / n_params): mean=0.7150 std=0.0334  n_params=27
+
+=== qubits=6 ===
+[VQE pretrain] epoch 1/15  meanE=-0.0712  gradnorm=83.2498
+[VQE pretrain] epoch 6/15  meanE=0.4044  gradnorm=77.7368
+[VQE pretrain] epoch 11/15  meanE=-0.6605  gradnorm=99.4252
+[VQE pretrain] epoch 15/15  meanE=0.4230  gradnorm=102.9760
+  pretrain 7.8s
+  qmaml    effective-dim (participation ratio / n_params): mean=0.9343 std=0.0248  n_params=45
+  uniform  effective-dim (participation ratio / n_params): mean=0.6870 std=0.0113  n_params=45
+  gaussian effective-dim (participation ratio / n_params): mean=0.7263 std=0.0186  n_params=45
+
+=== qubits=8 ===
+[VQE pretrain] epoch 1/15  meanE=-0.2863  gradnorm=97.8419
+[VQE pretrain] epoch 6/15  meanE=-0.9475  gradnorm=105.1224
+[VQE pretrain] epoch 11/15  meanE=-0.7831  gradnorm=116.4989
+[VQE pretrain] epoch 15/15  meanE=-0.7434  gradnorm=119.5078
+  pretrain 7.2s
+  qmaml    effective-dim (participation ratio / n_params): mean=0.9576 std=0.0159  n_params=63
+  uniform  effective-dim (participation ratio / n_params): mean=0.6934 std=0.0110  n_params=63
+  gaussian effective-dim (participation ratio / n_params): mean=0.7329 std=0.0181  n_params=63
+
+saved -> fisher_info_effective_dim.json

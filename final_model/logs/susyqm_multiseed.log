@@ -1,0 +1,21 @@
+[SUSY-QM pretrain] epoch 1/40  meanE=4.0583  gradnorm=23.6040
+[SUSY-QM pretrain] epoch 40/40  meanE=0.2897  gradnorm=1.6543
+  [susyqm seed=0] pretrain 88.6s
+  [susyqm seed=0] final log-gap: {'qmaml': -4.867062367123845, 'basis_paper': -1.9212534511044623, 'zero': 0.0004450186065570892, 'pi': -2.395015600782895, 'uniform': -4.751685046894461, 'gaussian': -4.663138663992242}
+[SUSY-QM pretrain] epoch 1/40  meanE=3.3184  gradnorm=18.1138
+[SUSY-QM pretrain] epoch 40/40  meanE=0.2172  gradnorm=1.9041
+  [susyqm seed=1] pretrain 88.6s
+  [susyqm seed=1] final log-gap: {'qmaml': -4.902676228078477, 'basis_paper': -2.5301021649244513, 'zero': -0.5792945040591813, 'pi': -3.279588052449219, 'uniform': -4.620869144982251, 'gaussian': -4.624644878981512}
+[SUSY-QM pretrain] epoch 1/40  meanE=5.5593  gradnorm=31.2567
+[SUSY-QM pretrain] epoch 40/40  meanE=0.2227  gradnorm=2.6116
+  [susyqm seed=2] pretrain 57.1s
+  [susyqm seed=2] final log-gap: {'qmaml': -3.6741361569862994, 'basis_paper': 0.339617920679512, 'zero': -0.0548815511635942, 'pi': -1.9534276247745395, 'uniform': -4.890771554981973, 'gaussian': -4.353316406201894}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\susyqm\multiseed_results.json
+
+=== susyqm multi-seed (n=3) summary ===
+  qmaml        mean=-4.4813  std=0.5709  per-seed=[-4.8671, -4.9027, -3.6741]
+  basis_paper  mean=-1.3706  std=1.2346  per-seed=[-1.9213, -2.5301, 0.3396]
+  zero         mean=-0.2112  std=0.2612  per-seed=[0.0004, -0.5793, -0.0549]
+  pi           mean=-2.5427  std=0.5514  per-seed=[-2.395, -3.2796, -1.9534]
+  uniform      mean=-4.7544  std=0.1102  per-seed=[-4.7517, -4.6209, -4.8908]
+  gaussian     mean=-4.5470  std=0.1379  per-seed=[-4.6631, -4.6246, -4.3533]

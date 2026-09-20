@@ -1,0 +1,32 @@
+[Scalar pretrain] epoch 1/40  meanE=11.7371  gradnorm=7.5295
+[Scalar pretrain] epoch 40/40  meanE=2.4568  gradnorm=1.7296
+seed=0 [symmetric_to_broken]: {'qmaml': 0.031332856325938435, 'zero': 0.018113750481086485, 'pi': 0.05035541274249682, 'uniform': 0.01813448419678964, 'gaussian': 0.018127022337064334}
+[Scalar pretrain] epoch 1/40  meanE=-8.3113  gradnorm=6.4773
+[Scalar pretrain] epoch 40/40  meanE=-9.0585  gradnorm=0.5603
+seed=0 [broken_to_symmetric]: {'qmaml': 0.933704038296548, 'zero': 0.9246454151885752, 'pi': 0.96873201759488, 'uniform': 0.8554230983621703, 'gaussian': 0.9742096276415295}
+[Scalar pretrain] epoch 1/40  meanE=9.8704  gradnorm=8.8112
+[Scalar pretrain] epoch 40/40  meanE=2.4784  gradnorm=3.0542
+seed=1 [symmetric_to_broken]: {'qmaml': 0.016584381761704795, 'zero': 0.016545971392291938, 'pi': 0.052376448459818745, 'uniform': 0.01653510695256514, 'gaussian': 0.01655019165079425}
+[Scalar pretrain] epoch 1/40  meanE=-8.7405  gradnorm=6.8062
+[Scalar pretrain] epoch 40/40  meanE=-9.5053  gradnorm=0.4884
+seed=1 [broken_to_symmetric]: {'qmaml': 0.9044579476529171, 'zero': 0.9034100834360063, 'pi': 0.8943781901487632, 'uniform': 0.7659578356365111, 'gaussian': 0.8160780052986801}
+[Scalar pretrain] epoch 1/40  meanE=10.7206  gradnorm=7.8327
+[Scalar pretrain] epoch 40/40  meanE=2.4742  gradnorm=3.3306
+seed=2 [symmetric_to_broken]: {'qmaml': 0.018850374358514006, 'zero': 0.01870551346300383, 'pi': 0.0669136820635396, 'uniform': 0.018707616391960738, 'gaussian': 0.018817795749144717}
+[Scalar pretrain] epoch 1/40  meanE=-9.2548  gradnorm=6.7199
+[Scalar pretrain] epoch 40/40  meanE=-9.8224  gradnorm=0.3984
+seed=2 [broken_to_symmetric]: {'qmaml': 0.9187778856113782, 'zero': 0.9799046433581484, 'pi': 0.9359656978753801, 'uniform': 0.6260034981226099, 'gaussian': 0.8517813913063588}
+
+Corrected phase-stratified final relative energy error, mean +/- std over 3 seeds:
+  [symmetric_to_broken]
+    qmaml      2.23% +/- 0.65%  per-seed=['3.13%', '1.66%', '1.89%']
+    zero       1.78% +/- 0.09%  per-seed=['1.81%', '1.65%', '1.87%']
+    pi         5.65% +/- 0.74%  per-seed=['5.04%', '5.24%', '6.69%']
+    uniform    1.78% +/- 0.09%  per-seed=['1.81%', '1.65%', '1.87%']
+    gaussian   1.78% +/- 0.09%  per-seed=['1.81%', '1.66%', '1.88%']
+  [broken_to_symmetric]
+    qmaml      91.90% +/- 1.19%  per-seed=['93.37%', '90.45%', '91.88%']
+    zero       93.60% +/- 3.22%  per-seed=['92.46%', '90.34%', '97.99%']
+    pi         93.30% +/- 3.04%  per-seed=['96.87%', '89.44%', '93.60%']
+    uniform    74.91% +/- 9.44%  per-seed=['85.54%', '76.60%', '62.60%']
+    gaussian   88.07% +/- 6.77%  per-seed=['97.42%', '81.61%', '85.18%']

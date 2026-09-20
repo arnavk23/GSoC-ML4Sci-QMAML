@@ -1,0 +1,16 @@
+[SU2LGT pretrain] epoch 1/100  meanE=3.5743  gradnorm=5.1371
+[SU2LGT pretrain] epoch 100/100  meanE=0.6858  gradnorm=1.8948
+  [su2lgt seed=0 N=4] pretrain 277.7s
+  [su2lgt seed=0 N=4] final rel err: {'qmaml': 3.1161351884178656, 'zero': 10.3086714131468, 'pi': 0.041760683764576596, 'uniform': 0.22306103052460602, 'gaussian': 0.14926180662825264}
+[SU2LGT pretrain] epoch 1/100  meanE=3.7210  gradnorm=3.5415
+[SU2LGT pretrain] epoch 100/100  meanE=-0.2852  gradnorm=1.3850
+  [su2lgt seed=1 N=4] pretrain 249.3s
+[SU2LGT pretrain] epoch 1/100  meanE=3.7210  gradnorm=3.5415
+[SU2LGT pretrain] epoch 100/100  meanE=-0.2852  gradnorm=1.3850
+  [su2lgt seed=1 N=4] pretrain 116.8s
+  [su2lgt seed=1 N=4] final rel err: {'qmaml': 0.02900595037353437, 'zero': 6.568366749739033, 'pi': 0.05991729857928604, 'uniform': 0.6430247438344162, 'gaussian': 0.12460739736742173}
+[SU2LGT pretrain] epoch 1/100  meanE=3.3330  gradnorm=2.7458
+[SU2LGT pretrain] epoch 100/100  meanE=0.9473  gradnorm=0.3918
+  [su2lgt seed=2 N=4] pretrain 91.3s
+  [su2lgt seed=2 N=4] final rel err: {'qmaml': 4.503565887321548, 'zero': 13.340888037374366, 'pi': 0.03506570582367548, 'uniform': 0.35835853112689203, 'gaussian': 0.6396700082794351}
+FOLLOWUP DONE n4lr

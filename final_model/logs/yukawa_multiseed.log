@@ -1,0 +1,20 @@
+[Yukawa pretrain] epoch 1/40  meanE=0.0913  gradnorm=2.0289
+[Yukawa pretrain] epoch 40/40  meanE=-0.0739  gradnorm=0.0751
+  [yukawa seed=0] pretrain 79.4s
+  [yukawa seed=0] final rel err: {'qmaml': 2.710280858418026e-07, 'zero': 2.986342757396079e-07, 'pi': 0.0136745586965048, 'uniform': 2.979299034659321e-06, 'gaussian': 3.706726935192797e-05}
+[Yukawa pretrain] epoch 1/40  meanE=0.0972  gradnorm=1.5790
+[Yukawa pretrain] epoch 40/40  meanE=-0.0683  gradnorm=0.2238
+  [yukawa seed=1] pretrain 89.6s
+  [yukawa seed=1] final rel err: {'qmaml': 2.693601969869723e-07, 'zero': 2.8510603914703986e-07, 'pi': 0.005495100775828019, 'uniform': 3.299147463983428e-06, 'gaussian': 2.6791938410119042e-05}
+[Yukawa pretrain] epoch 1/40  meanE=0.1359  gradnorm=2.1126
+[Yukawa pretrain] epoch 40/40  meanE=-0.0568  gradnorm=0.0208
+  [yukawa seed=2] pretrain 73.2s
+  [yukawa seed=2] final rel err: {'qmaml': 2.5527888737573977e-07, 'zero': 2.2391150272879858e-07, 'pi': 0.024206815667683342, 'uniform': 5.597434117633834e-07, 'gaussian': 3.391172560965333e-06}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\yukawa\multiseed_results.json
+
+=== yukawa multi-seed (n=3) summary ===
+  qmaml        mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  zero         mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  pi           mean=0.0145  std=0.0077  per-seed=[0.0137, 0.0055, 0.0242]
+  uniform      mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  gaussian     mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]

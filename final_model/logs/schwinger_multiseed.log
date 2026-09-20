@@ -1,0 +1,13 @@
+[Schwinger pretrain] epoch 1/40  meanE=1.2177  gradnorm=4.0814
+[Schwinger pretrain] epoch 40/40  meanE=-1.8717  gradnorm=0.4626
+seed=1 final rel err: {'qmaml': 0.0027732659968885322, 'zero': 2.4487381886410717, 'pi': 0.0028823926333592866, 'uniform': 0.021403133436488593, 'gaussian': 0.005291231066201548}
+[Schwinger pretrain] epoch 1/40  meanE=2.4324  gradnorm=3.5602
+[Schwinger pretrain] epoch 40/40  meanE=-1.5729  gradnorm=1.0756
+seed=2 final rel err: {'qmaml': 0.0026444910384140117, 'zero': 2.9203544578947884, 'pi': 0.0030426254066536194, 'uniform': 0.013951962435755048, 'gaussian': 0.006361805776830907}
+
+Multi-seed (n=3) final relative energy error, L=2, depth=3:
+  qmaml      mean=0.0018  std=0.0013  per-seed=[0.0, 0.0028, 0.0026]
+  zero       mean=3.1101  std=0.6319  per-seed=[3.9612, 2.4487, 2.9204]
+  pi         mean=0.0022  std=0.0011  per-seed=[0.0006, 0.0029, 0.003]
+  uniform    mean=0.0172  std=0.0031  per-seed=[0.0161, 0.0214, 0.014]
+  gaussian   mean=0.0045  std=0.0019  per-seed=[0.0019, 0.0053, 0.0064]

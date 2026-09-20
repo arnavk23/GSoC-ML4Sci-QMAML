@@ -1,0 +1,20 @@
+[Schwinger pretrain] epoch 1/40  meanE=9.4447  gradnorm=23.6250
+[Schwinger pretrain] epoch 40/40  meanE=7.2126  gradnorm=24.6420
+[depth=12 epochs=40 lr=0.005] pretrain 55.5s final_gradnorm=24.6420 final_meanE=7.2126  rel_err={'qmaml': 0.24494470822547976, 'zero': 4.512040837333231, 'pi': 0.17946795135264565, 'uniform': 0.3943608720635292, 'gaussian': 0.38396418108022545}
+[Schwinger pretrain] epoch 1/100  meanE=9.4447  gradnorm=23.6250
+[Schwinger pretrain] epoch 100/100  meanE=7.0288  gradnorm=24.1394
+[depth=12 epochs=100 lr=0.005] pretrain 133.3s final_gradnorm=24.1394 final_meanE=7.0288  rel_err={'qmaml': 0.23893651745923844, 'zero': 4.51204083733323, 'pi': 0.1794679513526476, 'uniform': 0.3943608720635307, 'gaussian': 0.3839641810802269}
+[Schwinger pretrain] epoch 1/100  meanE=10.4314  gradnorm=24.1010
+[Schwinger pretrain] epoch 100/100  meanE=-1.9467  gradnorm=7.9494
+[depth=12 epochs=100 lr=0.002] pretrain 135.0s final_gradnorm=7.9494 final_meanE=-1.9467  rel_err={'qmaml': 0.21210481902911993, 'zero': 4.512040837333223, 'pi': 0.17946795135264823, 'uniform': 0.3943608720635311, 'gaussian': 0.3839641810802274}
+
+Best depth=12 config: depth12_epochs100_lr0.002
+[Schwinger pretrain] epoch 1/100  meanE=9.1628  gradnorm=30.1536
+[Schwinger pretrain] epoch 100/100  meanE=-3.2673  gradnorm=4.6687
+[depth=18 epochs=100 lr=0.002] pretrain 199.0s final_gradnorm=4.6687 final_meanE=-3.2673  rel_err={'qmaml': 0.02426391627075701, 'zero': 4.512040837333237, 'pi': 0.08651402679094625, 'uniform': 0.1095009063696285, 'gaussian': 0.11837624210742154}
+
+=== L=4 depth x pretrain-budget scan summary ===
+  depth12_epochs40_lr0.005: qmaml=24.49% pi=17.95% gradnorm_final=24.6420
+  depth12_epochs100_lr0.005: qmaml=23.89% pi=17.95% gradnorm_final=24.1394
+  depth12_epochs100_lr0.002: qmaml=21.21% pi=17.95% gradnorm_final=7.9494
+  depth18_epochs100_lr0.002: qmaml=2.43% pi=8.65% gradnorm_final=4.6687

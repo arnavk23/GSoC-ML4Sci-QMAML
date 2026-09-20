@@ -1,0 +1,12 @@
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.2103  gradnorm=8.5579
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.4038  gradnorm=1.5313
+[z2 seed=1 gauge_invariant_hva] {'qmaml': 2.8904520311820077e-05, 'zero': 9.582166539753364e-05, 'pi': 8.828502963552071e-05, 'uniform': 9.004410755764707e-05, 'gaussian': 0.00010104297049536918}
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=79.9424  gradnorm=50.6290
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.2297  gradnorm=0.2312
+[z2 seed=1 hardware_efficient_zz] {'qmaml': 0.010618831375250814, 'zero': 0.011303632427322876, 'pi': 0.01661722007853382, 'uniform': 0.010619073084339825, 'gaussian': 0.010619089765812832}
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.0367  gradnorm=5.3766
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.7695  gradnorm=1.2310
+[z2 seed=2 gauge_invariant_hva] {'qmaml': 6.61086896652536e-06, 'zero': 8.488153407866382e-05, 'pi': 7.503985286968831e-05, 'uniform': 7.29544862888811e-05, 'gaussian': 0.00011928792225759942}
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=78.9465  gradnorm=38.0058
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.1412  gradnorm=0.0586
+[z2 seed=2 hardware_efficient_zz] {'qmaml': 0.02821068096946022, 'zero': 0.030025037539446808, 'pi': 0.017660396777676033, 'uniform': 0.028207086089271433, 'gaussian': 0.028218150517075304}

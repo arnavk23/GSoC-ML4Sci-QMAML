@@ -1,0 +1,20 @@
+[Nuclear pretrain] epoch 1/30  meanE=-3.1878  gradnorm=3.9676
+[Nuclear pretrain] epoch 30/30  meanE=-4.4815  gradnorm=0.1763
+  [nuclear seed=0] pretrain 1010.2s
+  [nuclear seed=0] final rel err: {'qmaml': 0.008850374469560392, 'zero': 0.008851009682402508, 'pi': 0.008852281959375924, 'uniform': 0.00885310659420874, 'gaussian': 0.008850783487670879}
+[Nuclear pretrain] epoch 1/30  meanE=-2.8434  gradnorm=4.3732
+[Nuclear pretrain] epoch 30/30  meanE=-4.5341  gradnorm=0.3322
+  [nuclear seed=1] pretrain 473.1s
+  [nuclear seed=1] final rel err: {'qmaml': 0.014089579306726144, 'zero': 0.014089615892878661, 'pi': 0.014089607559742583, 'uniform': 0.014089623333973482, 'gaussian': 0.014089636644995539}
+[Nuclear pretrain] epoch 1/30  meanE=-2.9838  gradnorm=4.0050
+[Nuclear pretrain] epoch 30/30  meanE=-4.3449  gradnorm=0.2631
+  [nuclear seed=2] pretrain 38269.7s
+  [nuclear seed=2] final rel err: {'qmaml': 0.020246566358535487, 'zero': 0.02024657555305232, 'pi': 0.020246593914679693, 'uniform': 0.02024656964571781, 'gaussian': 0.020246569509631027}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\nuclear\multiseed_results.json
+
+=== nuclear multi-seed (n=3) summary ===
+  qmaml        mean=0.0144  std=0.0047  per-seed=[0.0089, 0.0141, 0.0202]
+  zero         mean=0.0144  std=0.0047  per-seed=[0.0089, 0.0141, 0.0202]
+  pi           mean=0.0144  std=0.0047  per-seed=[0.0089, 0.0141, 0.0202]
+  uniform      mean=0.0144  std=0.0047  per-seed=[0.0089, 0.0141, 0.0202]
+  gaussian     mean=0.0144  std=0.0047  per-seed=[0.0089, 0.0141, 0.0202]

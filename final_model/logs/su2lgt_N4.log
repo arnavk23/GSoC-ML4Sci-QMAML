@@ -1,0 +1,9 @@
+--- SU(2) LGT qubit-count extension: N=4 (8 qubits) ---
+  N=4 m_tilde=1.0 x=1.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=4 m_tilde=0.5 x=2.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=4 m_tilde=1.5 x=0.5: Hermiticity max|H-H^dag|=0.00e+00  OK
+[SU2LGT pretrain] epoch 1/40  meanE=4.5335  gradnorm=3.9833
+[SU2LGT pretrain] epoch 40/40  meanE=4.9297  gradnorm=6.5015
+  [su2lgt seed=0 N=4] pretrain 54.2s
+  [su2lgt seed=0 N=4] final rel err: {'qmaml': 0.23272212964534345, 'zero': 10.3086714131468, 'pi': 0.04176068376457567, 'uniform': 0.22306103052460882, 'gaussian': 0.14926180662824856}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\su2_lgt\adaptation_final_N4.json

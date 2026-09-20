@@ -1,0 +1,19 @@
+stratified test set: ['HO', 'HO', 'HO', 'AHO', 'AHO', 'DW', 'AHO', 'DW', 'DW']
+[SUSY-QM pretrain] epoch 1/40  meanE=4.0583  gradnorm=23.6040
+[SUSY-QM pretrain] epoch 11/40  meanE=0.8161  gradnorm=7.3483
+[SUSY-QM pretrain] epoch 21/40  meanE=0.5562  gradnorm=4.4577
+[SUSY-QM pretrain] epoch 31/40  meanE=0.5495  gradnorm=3.2253
+[SUSY-QM pretrain] epoch 40/40  meanE=0.2897  gradnorm=1.6543
+pretrain done in 66.3s
+Final log-gap, stratified test set (3 HO / 3 AHO / 3 DW):
+  qmaml        log-gap=-7.667
+  basis_paper  log-gap=-4.513
+  zero         log-gap=-0.122
+  pi           log-gap=-1.425
+  uniform      log-gap=-7.519
+  gaussian     log-gap=-7.989
+Per-superpotential (n=3 each):
+  HO: qmaml=-15.08  basis_paper=-13.87  zero=0.03  pi=-0.66  uniform=-14.68  gaussian=-14.55
+  AHO: qmaml=-4.12  basis_paper=1.50  zero=0.78  pi=-0.78  uniform=-4.12  gaussian=-4.02
+  DW: qmaml=-3.80  basis_paper=-1.17  zero=-1.17  pi=-2.83  uniform=-3.76  gaussian=-5.40
+saved -> stratified_test_split.json

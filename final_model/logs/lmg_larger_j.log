@@ -1,0 +1,14 @@
+  Hermiticity (J=3.5): max|H-H^dag|=0.00e+00  OK
+  su(2) algebra: err1=8.88e-16 err2=3.55e-15  OK
+  V=0 limit: numeric=-4.550000 analytic=-4.550000  OK
+construction check: PASSED
+[lmg J=3.5 seed=0] final rel err: {'qmaml': 1.3605083692177088e-06, 'zero': 3.682351589860873e-08, 'pi': 8.616930350308633e-07, 'uniform': 1.444443805494701e-06, 'gaussian': 2.763151928669957e-06}
+[lmg J=3.5 seed=1] final rel err: {'qmaml': 2.670374922458318e-07, 'zero': 1.1977581609280937e-07, 'pi': 1.3122786750490504e-06, 'uniform': 8.533417513274768e-05, 'gaussian': 3.4381921559676994e-05}
+[lmg J=3.5 seed=2] final rel err: {'qmaml': 4.878452606192743e-07, 'zero': 4.359498166216765e-08, 'pi': 2.144073114840186e-06, 'uniform': 1.718425018084013e-05, 'gaussian': 5.636753729350434e-06}
+
+=== LMG J=3.5 multi-seed (n=3) summary ===
+  qmaml      mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  zero       mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  pi         mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  uniform    mean=0.0000  std=0.0000  per-seed=[0.0, 0.0001, 0.0]
+  gaussian   mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]

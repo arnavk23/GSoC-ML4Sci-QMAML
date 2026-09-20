@@ -1,0 +1,20 @@
+[LMG pretrain] epoch 1/40  meanE=-1.9762  gradnorm=4.5273
+[LMG pretrain] epoch 40/40  meanE=-2.2711  gradnorm=0.9256
+  [lmg seed=0] pretrain 33.1s
+  [lmg seed=0] final rel err: {'qmaml': 1.904779074226298e-08, 'zero': 1.1266010717890292e-08, 'pi': 1.333323718328954e-08, 'uniform': 1.5000407327735413e-08, 'gaussian': 2.193419938587546e-08}
+[LMG pretrain] epoch 1/40  meanE=-1.8426  gradnorm=5.0448
+[LMG pretrain] epoch 40/40  meanE=-2.5460  gradnorm=0.6893
+  [lmg seed=1] pretrain 38.7s
+  [lmg seed=1] final rel err: {'qmaml': 5.541984985301881e-08, 'zero': 1.1308362536476828e-08, 'pi': 2.2715995998787805e-08, 'uniform': 4.525186578822956e-08, 'gaussian': 2.867920289561461e-08}
+[LMG pretrain] epoch 1/40  meanE=-1.3333  gradnorm=5.1683
+[LMG pretrain] epoch 40/40  meanE=-2.2809  gradnorm=2.0145
+  [lmg seed=2] pretrain 54.5s
+  [lmg seed=2] final rel err: {'qmaml': 6.2455839051827786e-09, 'zero': 2.9383119784211608e-08, 'pi': 3.288729186270934e-08, 'uniform': 1.260193587720584e-08, 'gaussian': 6.512958535520175e-08}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\lmg\multiseed_results.json
+
+=== lmg multi-seed (n=3) summary ===
+  qmaml        mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  zero         mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  pi           mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  uniform      mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  gaussian     mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]

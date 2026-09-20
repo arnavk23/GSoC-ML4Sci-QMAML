@@ -1,0 +1,29 @@
+  N=2 m_tilde=1.0 x=1.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=0.5 x=2.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=1.5 x=0.5: Hermiticity max|H-H^dag|=0.00e+00  OK
+[SU2LGT pretrain] epoch 1/40  meanE=1.9368  gradnorm=5.4230
+[SU2LGT pretrain] epoch 40/40  meanE=-0.1276  gradnorm=0.4372
+  [su2lgt seed=0 N=2] pretrain 59.5s
+  [su2lgt seed=0 N=2] final rel err: {'qmaml': 2.0887417617848922e-07, 'zero': 13.904002876095488, 'pi': 0.0001966483813142501, 'uniform': 0.0003802653645126019, 'gaussian': 0.0002287387346714295}
+  N=2 m_tilde=1.0 x=1.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=0.5 x=2.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=1.5 x=0.5: Hermiticity max|H-H^dag|=0.00e+00  OK
+[SU2LGT pretrain] epoch 1/40  meanE=1.8500  gradnorm=5.4244
+[SU2LGT pretrain] epoch 40/40  meanE=-0.1114  gradnorm=0.4440
+  [su2lgt seed=1 N=2] pretrain 62.5s
+  [su2lgt seed=1 N=2] final rel err: {'qmaml': 9.451109918999012e-08, 'zero': 7.74678475776472, 'pi': 0.00010883922298582886, 'uniform': 8.489073493101196e-05, 'gaussian': 0.00011581017858946195}
+  N=2 m_tilde=1.0 x=1.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=0.5 x=2.0: Hermiticity max|H-H^dag|=0.00e+00  OK
+  N=2 m_tilde=1.5 x=0.5: Hermiticity max|H-H^dag|=0.00e+00  OK
+[SU2LGT pretrain] epoch 1/40  meanE=1.2099  gradnorm=3.6406
+[SU2LGT pretrain] epoch 40/40  meanE=-0.0641  gradnorm=1.0023
+  [su2lgt seed=2 N=2] pretrain 64.4s
+  [su2lgt seed=2 N=2] final rel err: {'qmaml': 9.747592602659616e-08, 'zero': 17.674302707964422, 'pi': 0.00014700933559494322, 'uniform': 0.00018599289754107695, 'gaussian': 5.897957912563993e-05}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\su2_lgt\multiseed_results.json
+
+=== su2lgt multi-seed (n=3) summary ===
+  qmaml        mean=0.0000  std=0.0000  per-seed=[0.0, 0.0, 0.0]
+  zero         mean=13.1084  std=4.0918  per-seed=[13.904, 7.7468, 17.6743]
+  pi           mean=0.0002  std=0.0000  per-seed=[0.0002, 0.0001, 0.0001]
+  uniform      mean=0.0002  std=0.0001  per-seed=[0.0004, 0.0001, 0.0002]
+  gaussian     mean=0.0001  std=0.0001  per-seed=[0.0002, 0.0001, 0.0001]

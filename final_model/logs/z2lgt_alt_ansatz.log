@@ -1,0 +1,30 @@
+  site 0: G^2-I max err=0.00e+00  [H,G] max err=0.00e+00  OK
+  site 2: G^2-I max err=0.00e+00  [H,G] max err=0.00e+00  OK
+  site 4: G^2-I max err=0.00e+00  [H,G] max err=0.00e+00  OK
+  site 6: G^2-I max err=0.00e+00  [H,G] max err=0.00e+00  OK
+gauge invariance check: PASSED
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.2245  gradnorm=7.3828
+[Z2LGT-gauge_invariant_hva pretrain] epoch 11/40  meanE=74.8416  gradnorm=2.7198
+[Z2LGT-gauge_invariant_hva pretrain] epoch 21/40  meanE=74.6271  gradnorm=1.1882
+[Z2LGT-gauge_invariant_hva pretrain] epoch 31/40  meanE=74.6783  gradnorm=1.7591
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.5968  gradnorm=1.0166
+[gauge_invariant_hva] pretrain done in 168.7s  final gradnorm=1.017
+  Final relative energy error, gauge_invariant_hva:
+    qmaml      log-gap=-6.060   ~relative energy error=0.00%
+    zero       log-gap=-4.448   ~relative energy error=0.02%
+    pi         log-gap=-3.914   ~relative energy error=0.03%
+    uniform    log-gap=-4.088   ~relative energy error=0.02%
+    gaussian   log-gap=-4.505   ~relative energy error=0.01%
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=81.1982  gradnorm=53.0094
+[Z2LGT-hardware_efficient_zz pretrain] epoch 11/40  meanE=78.0675  gradnorm=7.0928
+[Z2LGT-hardware_efficient_zz pretrain] epoch 21/40  meanE=77.9306  gradnorm=1.8779
+[Z2LGT-hardware_efficient_zz pretrain] epoch 31/40  meanE=77.8489  gradnorm=0.0896
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.8485  gradnorm=0.0613
+[hardware_efficient_zz] pretrain done in 55.1s  final gradnorm=0.061
+  Final relative energy error, hardware_efficient_zz:
+    qmaml      log-gap=1.061   ~relative energy error=3.86%
+    zero       log-gap=1.070   ~relative energy error=3.90%
+    pi         log-gap=-0.137   ~relative energy error=1.17%
+    uniform    log-gap=1.061   ~relative energy error=3.86%
+    gaussian   log-gap=1.060   ~relative energy error=3.86%
+saved -> alt_ansatz_comparison.json

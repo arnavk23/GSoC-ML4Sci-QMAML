@@ -1,0 +1,20 @@
+[D8LGT pretrain] epoch 1/40  meanE=-0.5979  gradnorm=3.0599
+[D8LGT pretrain] epoch 40/40  meanE=-2.5863  gradnorm=1.2360
+  [d8lgt seed=0] pretrain 142.5s
+  [d8lgt seed=0] final rel err: {'qmaml': 0.10491118006919153, 'zero': 0.9526644528434136, 'pi': 0.2600682543346231, 'uniform': 0.1186073396453705, 'gaussian': 0.10968215478398183}
+[D8LGT pretrain] epoch 1/40  meanE=-0.6047  gradnorm=2.8254
+[D8LGT pretrain] epoch 40/40  meanE=-2.7490  gradnorm=0.2623
+  [d8lgt seed=1] pretrain 119.0s
+  [d8lgt seed=1] final rel err: {'qmaml': 0.1547421145004654, 'zero': 0.923727970980614, 'pi': 0.2199294167530227, 'uniform': 0.139426661169723, 'gaussian': 0.1960251948880333}
+[D8LGT pretrain] epoch 1/40  meanE=-0.2715  gradnorm=1.9565
+[D8LGT pretrain] epoch 40/40  meanE=-2.2507  gradnorm=0.8821
+  [d8lgt seed=2] pretrain 75.8s
+  [d8lgt seed=2] final rel err: {'qmaml': 0.06473269703805187, 'zero': 0.9403916460329669, 'pi': 0.16306664951631247, 'uniform': 0.06345260028004669, 'gaussian': 0.056690691327563256}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\d8_lgt\multiseed_results.json
+
+=== d8lgt multi-seed (n=3) summary ===
+  qmaml        mean=0.1081  std=0.0368  per-seed=[0.1049, 0.1547, 0.0647]
+  zero         mean=0.9389  std=0.0119  per-seed=[0.9527, 0.9237, 0.9404]
+  pi           mean=0.2144  std=0.0398  per-seed=[0.2601, 0.2199, 0.1631]
+  uniform      mean=0.1072  std=0.0321  per-seed=[0.1186, 0.1394, 0.0635]
+  gaussian     mean=0.1208  std=0.0574  per-seed=[0.1097, 0.196, 0.0567]

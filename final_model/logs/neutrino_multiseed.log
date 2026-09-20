@@ -1,0 +1,29 @@
+  Hermiticity (mu=0): max|H-H^dag|=0.00e+00
+  mu=0 ground energy: -2.000000 vs. analytic -N*omega/2=-2.000000  err=4.44e-16
+  theta=0,mu=0 ground state overlap with |11...1>: 1.000000
+[Neutrino pretrain] epoch 1/40  meanE=0.1370  gradnorm=6.5708
+[Neutrino pretrain] epoch 40/40  meanE=-2.5799  gradnorm=0.7392
+  [neutrino seed=0 N=4] pretrain 56.0s
+  [neutrino seed=0 N=4] final rel err: {'qmaml': 2.1510174993749806e-07, 'zero': 0.00015782466089834371, 'pi': 4.129165112852241e-06, 'uniform': 4.403573384886464e-05, 'gaussian': 2.6592372257241934e-05}
+  Hermiticity (mu=0): max|H-H^dag|=0.00e+00
+  mu=0 ground energy: -2.000000 vs. analytic -N*omega/2=-2.000000  err=4.44e-16
+  theta=0,mu=0 ground state overlap with |11...1>: 1.000000
+[Neutrino pretrain] epoch 1/40  meanE=-0.1607  gradnorm=4.9022
+[Neutrino pretrain] epoch 40/40  meanE=-2.0910  gradnorm=1.8963
+  [neutrino seed=1 N=4] pretrain 59.7s
+  [neutrino seed=1 N=4] final rel err: {'qmaml': 0.00010561432979694774, 'zero': 0.0007831386529194875, 'pi': 5.101796867637694e-05, 'uniform': 0.0009571580918337164, 'gaussian': 0.0005097980299423955}
+  Hermiticity (mu=0): max|H-H^dag|=0.00e+00
+  mu=0 ground energy: -2.000000 vs. analytic -N*omega/2=-2.000000  err=4.44e-16
+  theta=0,mu=0 ground state overlap with |11...1>: 1.000000
+[Neutrino pretrain] epoch 1/40  meanE=0.3279  gradnorm=5.9796
+[Neutrino pretrain] epoch 40/40  meanE=-2.5192  gradnorm=0.4423
+  [neutrino seed=2 N=4] pretrain 52.9s
+  [neutrino seed=2 N=4] final rel err: {'qmaml': 8.025629427362885e-07, 'zero': 0.0007285154410496465, 'pi': 7.19538415802638e-06, 'uniform': 7.821116126621462e-06, 'gaussian': 4.066551090020593e-05}
+  saved -> C:\Users\kapoo\Downloads\qmaml\final_model\results\neutrino\multiseed_results.json
+
+=== neutrino multi-seed (n=3) summary ===
+  qmaml        mean=0.0000  std=0.0000  per-seed=[0.0, 0.0001, 0.0]
+  zero         mean=0.0006  std=0.0003  per-seed=[0.0002, 0.0008, 0.0007]
+  pi           mean=0.0000  std=0.0000  per-seed=[0.0, 0.0001, 0.0]
+  uniform      mean=0.0003  std=0.0004  per-seed=[0.0, 0.001, 0.0]
+  gaussian     mean=0.0002  std=0.0002  per-seed=[0.0, 0.0005, 0.0]
