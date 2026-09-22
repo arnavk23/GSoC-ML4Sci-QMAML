@@ -1,0 +1,18 @@
+[Schwinger pretrain] epoch 1/100  meanE=9.0015  gradnorm=27.9626
+[Schwinger pretrain] epoch 100/100  meanE=7.1180  gradnorm=31.1019
+[depth=18 epochs=100 lr=0.005] pretrain 461.3s final_gradnorm=31.1019 final_meanE=7.1180  rel_err={'qmaml': 0.04473045523454701, 'zero': 4.51204083733323, 'pi': 0.08651402679094826, 'uniform': 0.10950090636963049, 'gaussian': 0.11837624210742356}
+[Schwinger pretrain] epoch 1/100  meanE=6.5990  gradnorm=16.9141
+[Schwinger pretrain] epoch 100/100  meanE=-2.8918  gradnorm=3.9470
+[depth=12 epochs=100 lr=0.002] pretrain 335.4s final_gradnorm=3.9470 final_meanE=-2.8918  rel_err={'qmaml': 0.2043424268505735, 'zero': 5.865891436808767, 'pi': 0.24986747106103965, 'uniform': 0.47844614862297813, 'gaussian': 0.4905299521272048}
+[Schwinger pretrain] epoch 1/100  meanE=5.9918  gradnorm=17.2897
+[Schwinger pretrain] epoch 100/100  meanE=-3.5766  gradnorm=4.7547
+[Schwinger pretrain] epoch 1/100  meanE=5.9918  gradnorm=17.2897
+[Schwinger pretrain] epoch 100/100  meanE=-3.5766  gradnorm=4.7547
+[depth=18 epochs=100 lr=0.002] pretrain 910.9s final_gradnorm=4.7547 final_meanE=-3.5766  rel_err={'qmaml': 0.0464114550353099, 'zero': 5.865891436808762, 'pi': 0.12432836794066403, 'uniform': 0.16541802845931267, 'gaussian': 0.1738419387264502}
+[Schwinger pretrain] epoch 1/100  meanE=12.3512  gradnorm=22.2260
+[Schwinger pretrain] epoch 100/100  meanE=-2.3124  gradnorm=5.0535
+[depth=12 epochs=100 lr=0.002] pretrain 527.5s final_gradnorm=5.0535 final_meanE=-2.3124  rel_err={'qmaml': 0.18411850762254964, 'zero': 6.978892130600407, 'pi': 0.12407430986549611, 'uniform': 0.5570765697041214, 'gaussian': 0.5731597567864466}
+[Schwinger pretrain] epoch 1/100  meanE=10.7135  gradnorm=25.6328
+[Schwinger pretrain] epoch 100/100  meanE=-3.0062  gradnorm=4.6007
+[depth=18 epochs=100 lr=0.002] pretrain 1078.9s final_gradnorm=4.6007 final_meanE=-3.0062  rel_err={'qmaml': 0.027013106568203226, 'zero': 6.978892130600398, 'pi': 0.09892179317013464, 'uniform': 0.14499050884944245, 'gaussian': 0.17438155731661675}
+L4SEEDS DONE

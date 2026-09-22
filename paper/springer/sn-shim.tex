@@ -1,0 +1,18 @@
+% Compatibility shim: lets body.tex compile with the plain article class for content checking when the
+% Springer Nature class (sn-jnl.cls) is not available. NOT used in the final sn-article.tex.
+\makeatletter
+\let\sn@oldtitle\title
+\renewcommand{\title}[2][]{\sn@oldtitle{#2}}
+\renewcommand{\author}{\@ifstar{\sn@author}{\sn@author}}
+\newcommand{\sn@author}[2][]{\gdef\@author{#2}}
+\newcommand{\affil}{\@ifstar{\sn@affil}{\sn@affil}}
+\newcommand{\sn@affil}[2][]{}
+\newcommand{\email}[1]{}
+\newcommand{\fnm}[1]{#1}
+\newcommand{\sur}[1]{#1}
+\renewcommand{\abstract}[1]{\begin{quote}\small\textbf{Abstract.} #1\end{quote}}
+\newcommand{\keywords}[1]{\par\noindent\textbf{Keywords:} #1\par\bigskip}
+\newcommand{\botrule}{\bottomrule}
+\newcommand{\backmatter}{}
+\newcommand{\bmhead}[1]{\paragraph*{#1}}
+\makeatother

@@ -1,0 +1,21 @@
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.2245  gradnorm=7.3828
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.5968  gradnorm=1.0166
+gauge_invariant_hva/seed0 {'qmaml': 1.4676906180511408e-05, 'zero': 6.64669104092057e-05, 'pi': 7.149380888830753e-05, 'uniform': 8.528099722503414e-05, 'gaussian': 4.762750578076537e-05}
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=81.1982  gradnorm=53.0094
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.8485  gradnorm=0.0613
+hardware_efficient_zz/seed0 {'qmaml': 0.031502811083022296, 'zero': 0.03188288681550682, 'pi': 0.011301667727717929, 'uniform': 0.0314896406209304, 'gaussian': 0.0314600529470136}
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.2103  gradnorm=8.5579
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.4038  gradnorm=1.5313
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.2103  gradnorm=8.5579
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.4038  gradnorm=1.5313
+gauge_invariant_hva/seed1 {'qmaml': 2.379741953478285e-05, 'zero': 5.8818573068762384e-05, 'pi': 9.465144129503465e-05, 'uniform': 5.873642052270724e-05, 'gaussian': 7.662221253534269e-05}
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=79.9424  gradnorm=50.6290
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.2297  gradnorm=0.2312
+hardware_efficient_zz/seed1 {'qmaml': 0.009687308823477866, 'zero': 0.010099443659233346, 'pi': 0.0118949440023293, 'uniform': 0.009686826400674335, 'gaussian': 0.009686585329630813}
+[Z2LGT-gauge_invariant_hva pretrain] epoch 1/40  meanE=76.0367  gradnorm=5.3766
+[Z2LGT-gauge_invariant_hva pretrain] epoch 40/40  meanE=74.7695  gradnorm=1.2310
+gauge_invariant_hva/seed2 {'qmaml': 3.903595020106538e-06, 'zero': 3.9605777698770506e-05, 'pi': 2.387118330970453e-05, 'uniform': 2.569401519565325e-05, 'gaussian': 5.1898950017692034e-05}
+[Z2LGT-hardware_efficient_zz pretrain] epoch 1/40  meanE=78.9465  gradnorm=38.0058
+[Z2LGT-hardware_efficient_zz pretrain] epoch 40/40  meanE=77.1412  gradnorm=0.0586
+hardware_efficient_zz/seed2 {'qmaml': 0.033056026369338604, 'zero': 0.03493190704000125, 'pi': 0.014754408472835458, 'uniform': 0.03304496349061205, 'gaussian': 0.032821418598622}
+Z2 DONE full

@@ -1,0 +1,16 @@
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& 4 qubits & 6 qubits & 8 qubits \\
+\midrule
+Seeds ($n$) & 8 & 8 & 8 \\
+\midrule
+Zero & 0.513\,$\pm$\,0.040 & 0.491\,$\pm$\,0.034 & 0.529\,$\pm$\,0.040 \\
+Uniform & 0.505\,$\pm$\,0.015 & 0.516\,$\pm$\,0.047 & 0.508\,$\pm$\,0.046 \\
+Gaussian & 0.496\,$\pm$\,0.028 & 0.499\,$\pm$\,0.046 & 0.516\,$\pm$\,0.018 \\
+First-order variant & 0.501\,$\pm$\,0.042 & 0.512\,$\pm$\,0.034 & 0.499\,$\pm$\,0.035 \\
+\textbf{Q-MAML} & \textbf{0.574\,$\pm$\,0.032} & \textbf{0.573\,$\pm$\,0.023} & \textbf{0.560\,$\pm$\,0.023} \\
+\midrule
+Welch $p$ ($d$), Q-MAML vs Gaussian & $<0.001$ (2.6) & 0.002 (2.1) & $<0.001$ (2.1) \\
+Welch $p$ ($d$), vs best classical & 0.005 (1.7; Zero) & 0.011 (1.5; Uniform) & 0.081 (1.0; Zero) \\
+\botrule
+\end{tabular}

@@ -1,0 +1,74 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[section]{placeins}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\newcommand{\botrule}{\bottomrule}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thesection}{S\arabic{section}}
+
+\title{Supplementary Material\\
+\large Learned initialization for variational quantum circuits on lattice and field-theory Hamiltonians: a ten-system benchmark of Q-MAML}
+\author{Arnav Kapoor}
+\date{}
+
+\begin{document}
+\maketitle
+
+This document collects the per-seed numbers behind the means reported in the main text, and three
+exploratory results that motivated choices made there but are not needed to follow its argument.
+
+\section{Per-seed results for the ten Hamiltonians}\label{sec:supp_tracks}
+
+Table~\ref{tab:supp_tracks} gives the raw per-seed relative error (or log-gap, Track F) underlying
+Table~2 of the main text: every number that mean and win/tie/loss counts there are computed from.
+
+\input{supp_tracks_table.tex}
+
+\section{$\mathbb{Z}_2$ gauge theory: penalty-strength sweep}\label{sec:supp_vsweep}
+
+The main text's section on structural gauge invariance states that, on the penalty-enforced
+hardware-efficient ansatz, Q-MAML is behind the best classical scheme at every penalty strength $V$
+tested, refuting the explanation that a large penalty simply drowns the task signal.
+Table~\ref{tab:supp_vsweep} gives the single-seed final energies behind that statement (reduced
+4-task, 200-iteration budget, $V\in\{1,3,10,30\}$); Q-MAML ties Uniform only at the weakest penalty
+and falls further behind as $V$ grows to $10$, recovering slightly by $V=30$.
+
+\input{supp_vsweep_table.tex}
+
+\section{Lattice Schwinger model: the $L{=}4$ depth/pretraining-rate scan}\label{sec:supp_l4}
+
+The main text's section on system size reports that depth, not pretraining convergence, decides the
+$L{=}4$ (8-qubit) result. Table~\ref{tab:supp_l4} gives the single-seed grid this was read off:
+pretraining learning rate 0.005 stalls (final energy far from the ground state at every depth-12
+setting, visible as the shared Zero/Uniform/Gaussian columns not moving with epoch count), and at
+depth 12 no learning-rate or epoch-count change brings Q-MAML ahead of $\pi$; only the depth-18
+ansatz does, and by a wide margin.
+
+\input{supp_l4scan_table.tex}
+
+\section{Quark--gluon jet tagging}\label{sec:supp_qg}
+
+A second classification dataset, quark--gluon jet tagging (six qubits, two seeds), is mentioned in
+the main text's HEP classification section as directional evidence only. Table~\ref{tab:supp_qg}
+gives the full comparison: Q-MAML's validation accuracy and meta-loss against the three classical
+baselines used elsewhere in classification (the first-order variant was not run on this dataset).
+
+\input{supp_quarkgluon_table.tex}
+
+\section{Software and compute}\label{sec:supp_software}
+
+Circuits are simulated with PennyLane; the Learner, encoders and optimizers use PyTorch (Adam
+throughout, double precision for the Learner). All results are noiseless statevector simulation; no
+quantum hardware was used. Exact ground energies and the symmetry checks in Table~1 (main text) use
+NumPy/SciPy dense or sparse diagonalization, run once per Hamiltonian module before any Q-MAML run
+(\texttt{verify\_construction()} in each \texttt{hamiltonians\_*.py}). Code, notebooks and saved
+results are at the repository given in the main text's Data and code availability statement.
+
+\end{document}

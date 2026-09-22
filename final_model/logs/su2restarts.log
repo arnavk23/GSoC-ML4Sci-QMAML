@@ -1,0 +1,39 @@
+[SU2LGT pretrain] epoch 1/40  meanE=4.1473  gradnorm=3.4679
+[SU2LGT pretrain] epoch 40/40  meanE=3.0159  gradnorm=2.1919
+[SU2LGT pretrain] epoch 1/40  meanE=4.1473  gradnorm=3.4679
+[SU2LGT pretrain] epoch 40/40  meanE=3.0159  gradnorm=2.1919
+dseed2/restart0 {'train_loss_last': 3.0159, 'train_loss_min': 3.0159, 'gradnorm_last': 2.1919, 'mean_init_E': 2.9581, 'test_rel_err': 0.907}
+[SU2LGT pretrain] epoch 1/40  meanE=3.8842  gradnorm=3.3128
+[SU2LGT pretrain] epoch 40/40  meanE=-0.2747  gradnorm=1.1931
+dseed2/restart1 {'train_loss_last': -0.2747, 'train_loss_min': -0.2918, 'gradnorm_last': 1.1931, 'mean_init_E': -0.2544, 'test_rel_err': 0.0228}
+[SU2LGT pretrain] epoch 1/40  meanE=3.6695  gradnorm=3.1727
+[SU2LGT pretrain] epoch 40/40  meanE=0.0310  gradnorm=3.7857
+dseed2/restart2 {'train_loss_last': 0.031, 'train_loss_min': 0.031, 'gradnorm_last': 3.7857, 'mean_init_E': 0.4661, 'test_rel_err': 0.0228}
+[SU2LGT pretrain] epoch 1/40  meanE=3.5905  gradnorm=3.5251
+[SU2LGT pretrain] epoch 40/40  meanE=0.9599  gradnorm=0.4382
+dseed2/restart3 {'train_loss_last': 0.9599, 'train_loss_min': 0.9569, 'gradnorm_last': 0.4382, 'mean_init_E': 1.1286, 'test_rel_err': 4.5036}
+[SU2LGT pretrain] epoch 1/40  meanE=3.8656  gradnorm=3.2731
+[SU2LGT pretrain] epoch 40/40  meanE=-0.2504  gradnorm=1.7674
+dseed2/restart4 {'train_loss_last': -0.2504, 'train_loss_min': -0.3197, 'gradnorm_last': 1.7674, 'mean_init_E': -0.2283, 'test_rel_err': 0.0228}
+[SU2LGT pretrain] epoch 1/40  meanE=3.5760  gradnorm=3.0657
+[SU2LGT pretrain] epoch 40/40  meanE=0.9840  gradnorm=2.2926
+dseed2/restart5 {'train_loss_last': 0.984, 'train_loss_min': 0.9575, 'gradnorm_last': 2.2926, 'mean_init_E': 1.4089, 'test_rel_err': 0.8686}
+[SU2LGT pretrain] epoch 1/40  meanE=4.1996  gradnorm=3.9839
+[SU2LGT pretrain] epoch 40/40  meanE=-0.2618  gradnorm=3.0934
+dseed0/restart0 {'train_loss_last': -0.2618, 'train_loss_min': -0.2852, 'gradnorm_last': 3.0934, 'mean_init_E': -0.1921, 'test_rel_err': 0.0338}
+[SU2LGT pretrain] epoch 1/40  meanE=4.3243  gradnorm=3.7139
+[SU2LGT pretrain] epoch 40/40  meanE=0.8433  gradnorm=1.2345
+dseed0/restart1 {'train_loss_last': 0.8433, 'train_loss_min': 0.8365, 'gradnorm_last': 1.2345, 'mean_init_E': 0.6741, 'test_rel_err': 2.6577}
+[SU2LGT pretrain] epoch 1/40  meanE=4.4753  gradnorm=3.9930
+[SU2LGT pretrain] epoch 40/40  meanE=-0.3070  gradnorm=1.6607
+dseed0/restart2 {'train_loss_last': -0.307, 'train_loss_min': -0.3099, 'gradnorm_last': 1.6607, 'mean_init_E': -0.2586, 'test_rel_err': 0.0337}
+[SU2LGT pretrain] epoch 1/40  meanE=4.6586  gradnorm=4.0901
+[SU2LGT pretrain] epoch 40/40  meanE=4.9415  gradnorm=9.6627
+dseed0/restart3 {'train_loss_last': 4.9415, 'train_loss_min': 4.6586, 'gradnorm_last': 9.6627, 'mean_init_E': 4.0228, 'test_rel_err': 0.0199}
+[SU2LGT pretrain] epoch 1/40  meanE=4.6327  gradnorm=4.3461
+[SU2LGT pretrain] epoch 40/40  meanE=4.8835  gradnorm=12.9970
+dseed0/restart4 {'train_loss_last': 4.8835, 'train_loss_min': 4.6327, 'gradnorm_last': 12.997, 'mean_init_E': 4.09, 'test_rel_err': 0.0477}
+[SU2LGT pretrain] epoch 1/40  meanE=4.6170  gradnorm=3.6245
+[SU2LGT pretrain] epoch 40/40  meanE=4.9167  gradnorm=9.5782
+dseed0/restart5 {'train_loss_last': 4.9167, 'train_loss_min': 4.617, 'gradnorm_last': 9.5782, 'mean_init_E': 4.1146, 'test_rel_err': 0.1509}
+RESTARTS DONE

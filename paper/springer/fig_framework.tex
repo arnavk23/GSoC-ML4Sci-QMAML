@@ -1,0 +1,44 @@
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw=black!70, rounded corners=1.5pt, align=center, font=\footnotesize, inner sep=3pt,
+              minimum height=9mm, minimum width=24mm, line width=0.5pt, fill=white},
+  learner/.style={box, draw=qorange, fill=qorange!14},
+  circuit/.style={box, draw=qblue, fill=qblue!12},
+  base/.style={box, draw=black!45, fill=black!5},
+  arr/.style={-{Stealth[length=2mm,width=1.6mm]}, line width=0.55pt, black!75},
+  back/.style={-{Stealth[length=2mm,width=1.6mm]}, line width=0.7pt, dashed, red!65!black},
+  lab/.style={font=\scriptsize, align=center}]
+% ------------------------------------------------------------------ (a) pretraining
+\node[font=\bfseries\large] at (-1.7,1.05) {a};
+\node[lab, anchor=west] at (-1.2,1.05) {\textbf{Pretraining} (Algorithm 1): learn to map a task to good angles};
+\node[box]     (a1) at (0,0)    {Task descriptor\\ $\phi_i$};
+\node[learner] (a2) at (4.0,0)  {Learner\\ $h_W$ (MLP)};
+\node[box]     (a3) at (8.2,0)  {Initial angles\\ $\theta_0=s\,h_W(\phi_i)$};
+\node[circuit] (a4) at (12.4,0) {Circuit\\ $U(\theta_0)|0\rangle$};
+\node[box]     (a5) at (16.4,0) {Energy\\ $E_i=\langle H_{\phi_i}\rangle$};
+\node[box]     (al) at (16.4,-2.0) {Loss $\sum_i E_i$};
+\draw[arr] (a1) -- (a2); \draw[arr] (a2) -- (a3); \draw[arr] (a3) -- (a4); \draw[arr] (a4) -- (a5);
+\draw[arr] (a5) -- (al);
+\draw[back] (al.west) -- (4.0,-2.0) -- (a2.south);
+\node[lab, text=red!65!black] at (10.2,-1.65) {gradient $\nabla_W$ flows through the circuit; no inner loop};
+% ------------------------------------------------------------------ separator
+\draw[black!30, line width=0.4pt] (-1.7,-3.05) -- (18.4,-3.05);
+% ------------------------------------------------------------------ (b) adaptation
+\node[font=\bfseries\large] at (-1.7,-3.55) {b};
+\node[lab, anchor=west] at (-1.2,-3.55) {\textbf{Adaptation} (Algorithm 2): a standard VQE loop from the predicted start};
+\node[box]     (b1) at (0,-5.0)   {New task\\ $\phi^\star$};
+\node[learner] (b2) at (4.0,-4.55){Learner $h_{W^\star}$\\ (frozen)};
+\node[base]    (b2b) at (4.0,-6.05){Classical baselines:\\ Zero, $\pi$, Uniform, Gaussian};
+\node[box]     (b3) at (8.2,-5.0) {Start point\\ $\theta_0$};
+\node[circuit] (b4) at (12.4,-5.0){Circuit\\ $U(\theta)|0\rangle$};
+\node[box]     (b5) at (16.4,-5.0){Energy\\ $E(\theta)$};
+\node[box]     (bo) at (12.4,-7.0){Optimizer\\ $\theta\leftarrow\theta-\eta'\nabla E$};
+\node[box]     (bf) at (6.9,-7.0) {Adapted state\\ $E_T\approx E_0$};
+\draw[arr] (b1.east) -- ++(0.6,0) |- (b2.west); \draw[arr] (b1.east) -- ++(0.6,0) |- (b2b.west);
+\draw[arr] (b2) -- (b3); \draw[arr] (b2b.east) -| (b3.south);
+\draw[arr] (b3) -- (b4); \draw[arr] (b4) -- (b5);
+\draw[arr] (b5.south) |- (bo.east);
+\draw[arr] (bo.north) -- (b4.south);
+\draw[arr] (bo.west) -- (bf.east);
+\node[lab] at (14.4,-6.35) {$T$ iterations};
+\end{tikzpicture}}

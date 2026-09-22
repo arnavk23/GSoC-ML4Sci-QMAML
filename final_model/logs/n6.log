@@ -1,0 +1,9 @@
+[Neutrino pretrain] epoch 1/40  meanE=0.1484  gradnorm=4.0965
+[Neutrino pretrain] epoch 40/40  meanE=-2.2064  gradnorm=1.9963
+  [neutrino seed=1 N=6] pretrain 32.1s
+  [neutrino seed=1 N=6] final rel err: {'qmaml': 1.393405435846882e-05, 'zero': 0.016936120482323385, 'pi': 0.0010657673135750776, 'uniform': 0.03783695567645665, 'gaussian': 0.004943809112244529}
+[Neutrino pretrain] epoch 1/40  meanE=0.6364  gradnorm=4.7285
+[Neutrino pretrain] epoch 40/40  meanE=-2.3795  gradnorm=2.3350
+  [neutrino seed=2 N=6] pretrain 47.7s
+  [neutrino seed=2 N=6] final rel err: {'qmaml': 3.62745478486756e-07, 'zero': 0.024635595464607904, 'pi': 5.22350890177308e-05, 'uniform': 0.0012077065256031242, 'gaussian': 0.015333822003713526}
+N6 DONE

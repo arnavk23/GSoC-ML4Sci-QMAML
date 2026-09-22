@@ -345,7 +345,7 @@ Read in this order:
     own non-learned approach — a `warm_start_nearby` baseline (adapting from a converged nearby-task
     solution, approximating their "warm-started from a nearby statevector-simulator solution") starts and
     stays slightly behind `qmaml` throughout. **3-seed replication is the strongest confirmation in this
-    project**: all five schemes agree on the final relative error to 4-5 significant figures at every seed
+    project**: all five schemes agree on the final relative error to within 0.03% at every seed
     (0.885% / 1.409% / 2.025% for seeds 0/1/2, <0.001% spread across schemes within a seed) — the
     identical-final-value finding is a structural property of the particle-conserving UCCSD ansatz, not a
     single-seed coincidence. **Reproducibility oddity, flagged not hidden**: seed 2's pretraining took

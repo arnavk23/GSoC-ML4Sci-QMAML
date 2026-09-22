@@ -11,3 +11,10 @@ paper/*.out
 paper/*.toc
 paper/*.bbl
 paper/*.blg
+paper/**/*.aux
+paper/**/*.log
+paper/**/*.out
+paper/**/*.toc
+paper/**/*.bbl
+paper/**/*.blg
+paper/**/_check_inlined.*

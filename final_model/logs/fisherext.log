@@ -1,0 +1,36 @@
+[VQE pretrain] epoch 1/15  meanE=-0.0589  gradnorm=94.8771
+[VQE pretrain] epoch 6/15  meanE=0.7839  gradnorm=99.6534
+[VQE pretrain] epoch 11/15  meanE=0.8769  gradnorm=113.5960
+[VQE pretrain] epoch 15/15  meanE=-0.2536  gradnorm=118.9400
+qubits=4 qmaml: mean=0.9251 std=0.0224
+qubits=4 uniform: mean=0.6841 std=0.0121
+qubits=4 gaussian: mean=0.7206 std=0.0280
+[VQE pretrain] epoch 1/15  meanE=-0.0712  gradnorm=83.2498
+[VQE pretrain] epoch 6/15  meanE=0.4044  gradnorm=77.7368
+[VQE pretrain] epoch 11/15  meanE=-0.6605  gradnorm=99.4252
+[VQE pretrain] epoch 15/15  meanE=0.4230  gradnorm=102.9760
+qubits=6 qmaml: mean=0.9393 std=0.0203
+qubits=6 uniform: mean=0.6921 std=0.0109
+qubits=6 gaussian: mean=0.7320 std=0.0235
+[VQE pretrain] epoch 1/15  meanE=-0.2863  gradnorm=97.8419
+[VQE pretrain] epoch 6/15  meanE=-0.9475  gradnorm=105.1224
+[VQE pretrain] epoch 11/15  meanE=-0.7831  gradnorm=116.4989
+[VQE pretrain] epoch 15/15  meanE=-0.7434  gradnorm=119.5078
+qubits=8 qmaml: mean=0.9514 std=0.0174
+qubits=8 uniform: mean=0.6917 std=0.0096
+qubits=8 gaussian: mean=0.7300 std=0.0223
+[VQE pretrain] epoch 1/15  meanE=-0.2239  gradnorm=99.9359
+[VQE pretrain] epoch 6/15  meanE=0.8974  gradnorm=118.7570
+[VQE pretrain] epoch 11/15  meanE=0.8807  gradnorm=119.2556
+[VQE pretrain] epoch 15/15  meanE=-0.1642  gradnorm=108.7423
+qubits=10 qmaml: mean=0.9549 std=0.0159
+qubits=10 uniform: mean=0.6948 std=0.0086
+qubits=10 gaussian: mean=0.7342 std=0.0170
+[VQE pretrain] epoch 1/15  meanE=-0.5502  gradnorm=105.1287
+[VQE pretrain] epoch 6/15  meanE=-0.2321  gradnorm=101.1470
+[VQE pretrain] epoch 11/15  meanE=0.4544  gradnorm=97.4855
+[VQE pretrain] epoch 15/15  meanE=-0.0267  gradnorm=101.8967
+qubits=12 qmaml: mean=0.9587 std=0.0112
+qubits=12 uniform: mean=0.6923 std=0.0061
+qubits=12 gaussian: mean=0.7410 std=0.0146
+FISHER DONE

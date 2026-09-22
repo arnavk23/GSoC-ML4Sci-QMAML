@@ -421,33 +421,38 @@ others.'' We additionally compute the quantum Fisher information matrix (via Pen
 \texttt{metric\_tensor}, block-diagonal approximation) at each sampled parameter point and summarize it as
 a participation ratio $PR=(\sum\lambda)^2/\sum\lambda^2$ normalized by parameter count -- an effective
 dimension: how many directions in parameter space the circuit can actually distinguish, independent of and
-complementary to a single-coordinate gradient. Qubits $\{4,6,8\}$, depth 3, Heisenberg XYZ ansatz, 8 samples
-per (qubit count, scheme).
+complementary to a single-coordinate gradient. Qubits $\{4,6,8,10,12\}$, depth 3, Heisenberg XYZ ansatz, 20
+samples per (qubit count, scheme) (an earlier 8-sample pass over $\{4,6,8\}$ gave the same picture).
 
 \begin{center}
-\captionof{table}{Effective dimension (participation ratio / \# parameters), Heisenberg XYZ ansatz.}
+\captionof{table}{Effective dimension (participation ratio / \# parameters), Heisenberg XYZ ansatz, mean
+$\pm$ std over 20 samples.}
 \label{tab:fisher-effdim}
 \begin{tabular}{lccc}
 \toprule
 Qubits & Q-MAML & Uniform & Gaussian \\
 \midrule
-4 & $0.933\pm0.011$ & $0.683\pm0.011$ & $0.715\pm0.033$ \\
-6 & $0.934\pm0.025$ & $0.687\pm0.011$ & $0.726\pm0.019$ \\
-8 & $\mathbf{0.958}\pm0.016$ & $0.693\pm0.011$ & $0.733\pm0.018$ \\
+4 & $\mathbf{0.925}\pm0.022$ & $0.684\pm0.012$ & $0.721\pm0.028$ \\
+6 & $\mathbf{0.939}\pm0.020$ & $0.692\pm0.011$ & $0.732\pm0.024$ \\
+8 & $\mathbf{0.951}\pm0.017$ & $0.692\pm0.010$ & $0.730\pm0.022$ \\
+10 & $\mathbf{0.955}\pm0.016$ & $0.695\pm0.009$ & $0.734\pm0.017$ \\
+12 & $\mathbf{0.959}\pm0.011$ & $0.692\pm0.006$ & $0.741\pm0.015$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 Q-MAML's predicted initializations sit at consistently higher effective dimension ($93$--$96\%$ of the
-maximum possible rank) than Uniform ($68$--$69\%$) or Gaussian ($72$--$73\%$) at every qubit count tested,
-and the gap does not shrink with qubit count -- if anything Q-MAML's edge widens slightly at 8 qubits. This
+maximum possible rank) than Uniform ($68$--$70\%$) or Gaussian ($72$--$74\%$) at every qubit count tested,
+and the gap does not shrink with qubit count -- Q-MAML's effective dimension rises slowly from $0.925$ at 4
+qubits to $0.959$ at 12 while Uniform's stays flat near $0.69$. This
 is consistent with, and gives quantitative content to, the ``landscape placement'' explanation above: by
 this independent metric, Q-MAML's initialization is not merely comparable in gradient magnitude but sits in
 a genuinely less-degenerate region of parameter space than random classical schemes, a distinction the
-single-reference-gradient scan alone cannot make. Reduced qubit range (4--8 vs.\ the gradient scan's 4--14)
-and sample count (8 vs.\ 80 per point) for tractability -- \texttt{metric\_tensor} is markedly more
-expensive per sample than a single gradient component; extending this to the full range and to the
-classification domain is future work.
+single-reference-gradient scan alone cannot make. Range 4--12 qubits (the gradient scan's is 4--14) and 20
+samples per point (vs.\ 80) for tractability -- \texttt{metric\_tensor} is markedly more expensive per
+sample than a single gradient component. Not yet done: 14 qubits, depth 6, the classification domain, and the
+Hamiltonian tracks' own ansatze. This probe is on the Heisenberg XYZ ansatz only, and it measures local
+effective dimension at the initialization, not whether that translates into faster adaptation.
 \end{keyresult}
 
 \FloatBarrier
@@ -501,10 +506,10 @@ direction generally, not specific to Q-MAML.
 Sections above test Q-MAML on HEP \emph{data} (HIGGS) or the paper's own non-HEP VQE settings. Neither is
 what QMLHEP8 asks for: a Learner initializing VQEs for Hamiltonians that are themselves lattice field
 theories. Table~\ref{tab:tracks-overview} summarizes the ten tracks piloted here (2--8 qubits, verified for
-correctness before use, metrics of \S\ref{sec:metrics}). Every track except H is now $n{=}3$-seed
-replicated (Tracks B/C were already multi-seed at specific points; A/D/E/F/G/I/J are newly replicated
-here), and Tracks D and E additionally have one larger-qubit-count extension (single seed) verified and
-run.
+correctness before use, metrics of \S\ref{sec:metrics}). Every track is now $n{=}3$-seed
+replicated (Tracks B/C were already multi-seed at specific points; the rest are newly replicated here),
+and Tracks D ($N{=}3,4$) and E ($N{=}6$) additionally have larger-qubit-count extensions, verified first and
+each run at $n{=}3$ seeds.
 
 \begin{table}[ht]
 \centering\small
@@ -723,6 +728,27 @@ Zero & $111.87\%\pm1.48\%$ \\
 
 Q-MAML's best seed ($30.01\%$) is still worse than every uniform seed ($15.18$--$23.07\%$): ranking holds
 seed-by-seed; magnitude is seed-sensitive (Table~\ref{tab:z2lgt-seeds}).
+
+\begin{keyresult}
+\textbf{Annealing the penalty during pretraining (the other untried idea) helps on average but does not fix
+the track.} On the headline hardware-efficient ansatz, pretraining with $V$ changed geometrically over the 40
+epochs and evaluation at $V{=}10$ (headline protocol: 6 held-out tasks, 300 iterations), two schedules,
+$n{=}3$ seeds. Q-MAML relative error (\%), seeds 0/1/2: fixed $V{=}10$ $59.2/30.0/59.0$ (mean $49.4\pm13.7$);
+anneal $1\to10$ $31.5/30.7/\mathbf{4.3}$ (mean $22.2\pm12.6$); anneal $30\to10$ $31.8/30.6/33.9$ (mean
+$32.1\pm1.4$). The best classical scheme is $23.1/15.2/12.9$ (mean $17.0\pm4.4$). So annealing roughly halves
+Q-MAML's mean error (to $22$--$32\%$ from $49\%$), but Q-MAML beats every classical scheme at only one of
+six seed-schedule cells (the $1\to10$ schedule at seed 2, $3\times$ ahead of Gaussian). The two schedules
+are indistinguishable at seeds 0 and 1 and differ sharply at seed 2 ($4.3\%$ vs.\ $33.9\%$), so the effect of
+schedule direction is seed-dependent and not established from three seeds. The final pretraining meta-loss
+tracks the outcome: the training tasks' mean ground energy at $V{=}10$ is $\approx74.5$ (large and positive,
+because of the penalty term's offset), and the annealed hardware-efficient Learners end at $79.8$ (the $1\to10$
+run at seed 2, its $4.3\%$ result) or $99$--$102$ (every other run, its $\sim$31--34\% results), i.e.\ $5$ or
+$25$--$27$ above the ground energy, whereas the gauge-invariant ansatz's Learner ends at $74.6$, at the ground
+energy. Note the relative errors on this track are normalized by that $\approx74.5$ offset, so a $30\%$ error
+is $\sim$22 energy units and the gauge-invariant ansatz's $\sim$0.002\% is $\sim$$10^{-3}$. Together with the
+gauge-invariant-ansatz result below, this supports structural gauge invariance, not a better pretraining
+schedule, as the fix.
+\end{keyresult}
 
 \begin{keyresult}
 \textbf{The untried fix works.} We built and ran the two ready-made ansatze from~\citep{z2lgtbp2025} at
@@ -968,10 +994,23 @@ seeds finished: Q-MAML $312\%$ / $2.9\%$ / $450\%$ at seeds 0/1/2, against $23.3
 the original setting; $\pi$ is unchanged at $3.5$--$6.0\%$. The lower learning rate that repaired Track A's
 $L{=}4$ pretraining therefore does not fix Track D's bad seeds: seed 0 got \emph{worse} ($23\%\to312\%$), and
 seeds 1 and 2 agree with the original setting to four digits ($2.90$ vs.\ $2.91\%$; $450.36$ vs.\ $450.36\%$)
-despite 2.5$\times$ more epochs at a fifth of the learning rate. We do not know why. One reading is that
-adaptation from Q-MAML's prediction reaches the same final basin however it was pretrained, but this was not
-tested, and pretraining diagnostics (final energy, gradient norm) were not recorded, so these runs cannot
-show whether pretraining converged. What the pair of follow-ups does establish is that neither a converging
+despite 2.5$\times$ more epochs at a fifth of the learning rate. \textbf{A dedicated diagnostic run explains
+the agreement} (both pretraining settings, all three seeds, with the full pretraining history and per-task
+initial and adapted energies recorded). At seed 1 both settings converge to the same \emph{good} solution
+(training meta-loss $-0.27$, initial energies within $\sim$0.2 of the ground energies), so the adapted energies
+agree to $10^{-6}$--$10^{-4}$. At seed 2 both converge to the same \emph{bad} one: the meta-loss stalls near
+$0.95$ (ground energies are $\sim-0.3$), the predicted initial energies are $+0.5$ to $+1.5$, and adaptation
+then cannot move them at all (final energy equals initial energy to two digits, e.g.\ $1.17\to1.16$), i.e.\ the
+predicted initialization is essentially a stationary point of each task's cost. At seed 0 the original setting
+does not converge at all (meta-loss rises from $4.5$ to $4.9$), while the lower-learning-rate setting
+converges to an intermediate plateau (meta-loss $0.69$, initial energies $0.2$--$1.9$) from which adaptation
+barely moves. So the ``same basin'' reading is right at seed 2 but for a different reason than first
+guessed: it is not that adaptation converges to one basin regardless of the start, it is that pretraining
+converges to one \emph{poor local minimum of the meta-objective}, at which the initialization is stuck. The
+parameter distance between the two settings' adapted solutions confirms the two regimes ($9$--$21$ at
+seeds 1 and 2, where the settings agree, versus $111$--$302$ at seed 0, where they do not). Two consequences: ``pretraining converged'' is not the same as
+``pretraining worked'', and the failure is visible in the training meta-loss alone, without test data.
+What the pair of follow-ups does establish is that neither a converging
 $N{=}3$ budget nor the Track A learning-rate fix restores a Q-MAML margin, and Track D at $N{=}3$/$4$ is best
 summarized as: $\pi$ is the reliable scheme, Q-MAML is competitive-to-erratic, and the $N{=}2$ advantage does
 not extend.
@@ -1038,12 +1077,15 @@ is a 2-of-3-seed win, consistent with this section's own caveat that none of the
 within the 200-iteration budget, so seed-to-seed variation in how far each scheme has descended can still
 reorder the final ranking.
 
-\textbf{Qubit-count extension, $N{=}6$ (6 qubits, single seed), Hermiticity and both exact limits
-re-verified before running.} Here the win is unambiguous and larger than at $N{=}4$: Q-MAML
-$\varepsilon_{\mathrm{rel}}=1.1\times10^{-6}$ vs.\ $\pi$ $1.5\times10^{-4}$, Uniform $3.3\times10^{-4}$,
-Gaussian $7.6\times10^{-4}$, Zero $1.58\%$ -- a cleaner separation than at $N{=}4$, suggesting the seed-1
-ambiguity above is a slow-convergence artifact at the smaller size rather than a sign the advantage weakens
-with scale.
+\textbf{Qubit-count extension, $N{=}6$ (6 qubits, $n{=}3$ seeds), Hermiticity and both exact limits
+re-verified before running.} Here the win is unambiguous, larger than at $N{=}4$, and holds at every seed.
+Relative error (a fraction, not a percentage), seeds 0/1/2: Q-MAML $1.1\times10^{-6}$ / $1.4\times10^{-5}$ /
+$3.6\times10^{-7}$. The best classical scheme is $\pi$ at every seed ($1.5\times10^{-4}$, $1.1\times10^{-3}$,
+$5.2\times10^{-5}$), so Q-MAML leads it by $135\times$, $\approx77\times$ and $144\times$ per seed. Means over seeds:
+Q-MAML $5.1\times10^{-6}\pm6.2\times10^{-6}$, $\pi$ $4.2\times10^{-4}$, Gaussian $7.0\times10^{-3}$, Uniform
+$1.3\times10^{-2}$, Zero $1.9\times10^{-2}$. This is a cleaner separation than at $N{=}4$ (where Q-MAML won only
+2 of 3 seeds), suggesting the seed-1 ambiguity at $N{=}4$ is a slow-convergence artifact at the smaller size
+rather than a sign the advantage weakens with scale.
 \end{keyresult}
 
 \FloatBarrier
@@ -1207,7 +1249,7 @@ same final value; only the transient shape differs.}
 
 \begin{keyresult}
 \textbf{Multi-seed replication ($n{=}3$) is the strongest confirmation of any track in this paper.} At
-every seed, all five schemes agree on the final relative error to 4-5 significant figures (seed 0:
+every seed, all five schemes agree on the final relative error to within 0.03\% (seed 0:
 $0.8850$--$0.8853\%$; seed 1: $1.4090\%$ for all five; seed 2: $2.0247\%$ for all five) -- the residual
 spread across schemes within a seed ($<0.001\%$) is pure optimizer noise, an order of magnitude tighter
 than the spread across seeds ($0.885\%$ to $2.025\%$, driven by which nucleus/coupling combination each
@@ -1391,7 +1433,7 @@ qualitative behavior shows up}: Track D's $10^3\times$ machine-precision margin 
 at $N{=}2$ does not carry over. At $N{=}3$ (once the budget converges) $\pi$ is best at every seed and Q-MAML a stable second, and at $N{=}4$
 (where schemes do converge) Q-MAML becomes seed-unstable, from $2.9\%$ (best) to $450\%$ (catastrophic)
 across three seeds, while $\pi$ is the reliable scheme at $3.5$--$6.0\%$ -- while Track E's already-clean
-win at $N{=}4$ gets \emph{more} decisive at $N{=}6$ (single seed there). The same ``more qubits''
+win at $N{=}4$ gets \emph{more} decisive at $N{=}6$ ($n{=}3$: best at every seed, $\approx77\times$--$144\times$ ahead). The same ``more qubits''
 intervention gives two tracks different outcomes, so no single scaling story covers this paper's
 Hamiltonians, and Track D's own outcome is not what its $N{=}2$ result alone would have predicted.
 
@@ -1452,7 +1494,9 @@ ones. Documented separately, omitted from the main results.}
     it. \textbf{The structurally gauge-invariant ansatz comparison (the track's originally intended fix) is
     no longer untried}: it works, and cleanly (\S\ref{sec:track-b}), confirming the mechanism directly, and
     is now $n{=}3$-seed replicated (Q-MAML best at every seed, $3\times$--$10\times$ ahead of the best
-    classical scheme per seed). Still untried: annealing $V$ during pretraining; separating
+    classical scheme per seed). Annealing $V$ during pretraining is now tried ($n{=}3$, two schedules): it
+    roughly halves Q-MAML's mean error on the headline ansatz but beats every classical scheme in only one of
+    six cells, and the schedule direction's effect is seed-dependent. Still untried: separating
     penalty/physical energy into adaptively-weighted loss terms; running the gauge-invariant ansatz at
     Table~\ref{tab:z2lgt-headline}'s full budget (the replicated result uses the reduced 4-task/200-iteration
     budget) and at larger system sizes.
@@ -1473,13 +1517,15 @@ ones. Documented separately, omitted from the main results.}
     $450\%$; $\pi$ robust at $3.5$--$6.0\%$). Follow-ups: a converging $N{=}3$ budget (depth 6, $n{=}3$
     seeds) does not restore a Q-MAML margin ($\pi$ best at every seed, Q-MAML $5.7\times$--$8.9\times$
     behind), and a lower pretrain learning rate with more epochs does not fix the bad $N{=}4$ seeds
-    (Q-MAML $312/2.9/450\%$, matching the original to four digits at two of three seeds). Still undiagnosed:
-    why Q-MAML's $N{=}4$ seeds diverge, and why they are insensitive to the pretraining setting
-    (pretraining diagnostics were not recorded for these runs). The un-reduced-Hamiltonian caveat means none of this
+    (Q-MAML $312/2.9/450\%$, matching the original to four digits at two of three seeds). A diagnostic run
+    attributes the bad seeds to pretraining converging to a poor local minimum of the meta-objective, at
+    which the predicted initialization is a near-stationary point of each task's cost, visible in the
+    training meta-loss alone (seed 2: stalls near $0.95$ vs.\ ground energies $\sim-0.3$); whether such
+    minima can be avoided is being tested with pretraining restarts, and is not resolved here. The un-reduced-Hamiltonian caveat means none of this
     settles what happens with the paper's own reduction trick.
     \item \textbf{Track E}: the entire premise is a reformulation (ground state instead of the cited
     literature's real-time dynamics), see \S\ref{sec:track-e}. Now $n{=}3$-seed replicated at $N{=}4$
-    (a 2-of-3-seed win, not a clean one) and single-seed at a new $N{=}6$ extension (clean win); none of the
+    (a 2-of-3-seed win, not a clean one) and at a new $N{=}6$ extension ($n{=}3$, best at every seed); none of the
     five schemes had converged within the $N{=}4$ iteration budget, so the final-value gap may still narrow
     with more iterations, as it did in \S\ref{sec:vqe-heisenberg} -- still untested directly.
     \item \textbf{Track F}: now $n{=}3$-seed replicated (resolves into a statistical tie between Q-MAML,
@@ -1495,7 +1541,7 @@ ones. Documented separately, omitted from the main results.}
     $n{=}3$-seed replicated (resolves into a statistical tie with Uniform rather than a clean Q-MAML win);
     no plaquette term exists in a 1D chain at any $N$.
     \item \textbf{Track H}: $N{=}2$ for all three nuclei. Now $n{=}3$-seed replicated (the identical-final-
-    value finding holds to 4-5 significant figures at every seed, the tightest replication of any track
+    value finding holds to within 0.03\% at every seed (to six digits at two of three), the tightest replication of any track
     here), task parameters $(t,C,D)$ swept continuously rather than fixed to the source paper's own
     experimentally-calibrated values. The \texttt{warm\_start\_nearby} baseline approximates, not
     reproduces, the source paper's own warm-start protocol.
@@ -1526,9 +1572,9 @@ ones. Documented separately, omitted from the main results.}
     binning variable.
     \item \textbf{Barren-plateau diagnostic scope}: the single-reference-parameter-gradient scan (standard
     McClean protocol) is now complemented by a quantum-Fisher-information/effective-dimension probe
-    (\S\ref{sec:bp-vqe}), but only on the VQE-domain Heisenberg XYZ ansatz, qubits 4--8 (vs.\ the gradient
-    scan's 4--14), 8 samples/point (vs.\ 80). Extending it to the full qubit range, to every Hamiltonian
-    track, and to the classification domain is still open.
+    (\S\ref{sec:bp-vqe}), but only on the VQE-domain Heisenberg XYZ ansatz, qubits 4--12 (vs.\ the gradient
+    scan's 4--14), 20 samples/point (vs.\ 80). Extending it to 14 qubits, to every Hamiltonian
+    track's own ansatz, and to the classification domain is still open.
 \end{itemize}
 
 \section{Conclusion}
@@ -1546,7 +1592,7 @@ now $n{=}3$-seed replicated for \textbf{every one of the ten tracks}: robust win
 $\phi^4$ scalar field, interpolation only; SU(2) LGT at $N{=}2$; collective neutrino oscillations,
 decisively at $N{=}6$ though only 2-of-3 seeds at $N{=}4$), statistical ties for best on four (SUSY QM and
 $\mathbb{D}_8$ LGT, both revised down from single-seed ``wins'' once replicated; light nuclei, the
-strongest replication in this paper -- every scheme's final energy agrees to 4-5 significant figures at
+strongest replication in this paper -- every scheme's final energy agrees to within 0.03\% at
 every seed -- with Q-MAML faster; Yukawa, Q-MAML ties Zero-init at the precision floor), a genuine null
 result on one (LMG, too small a system to differentiate any scheme, replication-confirmed), and
 worst-scheme on one ($\mathbb{Z}_2$ LGT on its headline hardware-efficient-ansatz protocol -- \textbf{but
@@ -1561,7 +1607,7 @@ qubit-count axis, tried on Tracks D and E, gives different outcomes on each: Tra
 at $N{=}2$ does not carry over -- at $N{=}3$ (at a converging budget) $\pi$ is best at every seed and Q-MAML a stable second, and at $N{=}4$
 Q-MAML becomes seed-unstable ($2.9\%$ at its best seed, $450\%$ at its worst, $n{=}3$) while $\pi$ is
 reliable at $3.5$--$6.0\%$ -- whereas Track E's already-clean $N{=}4$ win gets more decisive at $N{=}6$
-(single seed) -- so scaling qubit count is not a uniform stress test in either direction. Track H is
+($n{=}3$) -- so scaling qubit count is not a uniform stress test in either direction. Track H is
 additionally the first ansatz-family comparison in this paper on
 its own headline protocol, and the first track where convergence \emph{shape} rather than final value
 carries the whole result; Track B's alternative-ansatz result above is this paper's second ansatz-family
@@ -1575,10 +1621,10 @@ seed-, scale-, and ansatz-dependent rather than fixed, and can lose its lead alo
 Which structural property of a Hamiltonian predicts whether learned initialization helps is now a concrete
 question with four seed-robust wins, four seed-robust ties, one seed-robust null result, one diagnosed loss
 that a change of ansatz resolves at three seeds, a qubit-count extension where the win gives way to seed
-instability (D) and one where it strengthens (E, single seed), and several partly-tested mechanisms, rather
+instability (D) and one where it strengthens (E, $n{=}3$), and several partly-tested mechanisms, rather
 than an open guess.
 \todo{Why Track D's Q-MAML seeds diverge at $N{=}4$ and are insensitive to the pretraining setting (record
-pretraining diagnostics; test the same-basin reading); Track E at $N{=}6$ is single-seed; the gauge-invariant Track B result is at the reduced budget only; more seeds (8-10)
+pretraining diagnostics; test the same-basin reading); the gauge-invariant Track B result is at the reduced budget only; more seeds (8-10)
 for both classification datasets; Track D at the source paper's own qubit-reduced,
 hadron-mass-ratio $N{=}4$ circuit (not yet attempted, vs.\ this paper's un-reduced $N{=}4$); Track J beyond
 $J{=}3.5$ (tried once, did not separate schemes -- an even larger $J$ or a different explanation is needed);

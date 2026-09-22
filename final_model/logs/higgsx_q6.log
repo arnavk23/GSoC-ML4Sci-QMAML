@@ -1,0 +1,227 @@
+[higgs_data] Using cached C:\Users\kapoo\Downloads\qmaml\final_model\data_higgs\higgs_subsample.csv (180000 rows).
+[Reptile*] Epoch 1/10 | Meta-loss 0.6928 | Val Loss 0.6918 | Train Acc 0.4653 | Val Acc 0.5104 | Train p-var 0.0006 | Val p-var 0.0002
+[Reptile*] Epoch 2/10 | Meta-loss 0.6927 | Val Loss 0.6918 | Train Acc 0.4653 | Val Acc 0.5104 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 3/10 | Meta-loss 0.6926 | Val Loss 0.6918 | Train Acc 0.4722 | Val Acc 0.5104 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 4/10 | Meta-loss 0.6926 | Val Loss 0.6917 | Train Acc 0.4861 | Val Acc 0.5104 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 5/10 | Meta-loss 0.6925 | Val Loss 0.6917 | Train Acc 0.4722 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 6/10 | Meta-loss 0.6925 | Val Loss 0.6917 | Train Acc 0.4653 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 7/10 | Meta-loss 0.6924 | Val Loss 0.6917 | Train Acc 0.4653 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 8/10 | Meta-loss 0.6924 | Val Loss 0.6917 | Train Acc 0.4722 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 9/10 | Meta-loss 0.6923 | Val Loss 0.6917 | Train Acc 0.4722 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+[Reptile*] Epoch 10/10 | Meta-loss 0.6923 | Val Loss 0.6917 | Train Acc 0.4653 | Val Acc 0.5000 | Train p-var 0.0005 | Val p-var 0.0002
+(6, 4, 'zero') done 460s final val_acc=0.5
+[Reptile*] Epoch 1/10 | Meta-loss 0.7093 | Val Loss 0.6965 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0002 | Val p-var 0.0005
+[Reptile*] Epoch 2/10 | Meta-loss 0.7077 | Val Loss 0.6964 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0002 | Val p-var 0.0004
+[Reptile*] Epoch 3/10 | Meta-loss 0.7063 | Val Loss 0.6962 | Train Acc 0.5000 | Val Acc 0.4896 | Train p-var 0.0002 | Val p-var 0.0004
+[Reptile*] Epoch 4/10 | Meta-loss 0.7050 | Val Loss 0.6961 | Train Acc 0.5000 | Val Acc 0.4896 | Train p-var 0.0002 | Val p-var 0.0003
+[Reptile*] Epoch 5/10 | Meta-loss 0.7039 | Val Loss 0.6960 | Train Acc 0.5000 | Val Acc 0.4896 | Train p-var 0.0002 | Val p-var 0.0003
+[Reptile*] Epoch 6/10 | Meta-loss 0.7029 | Val Loss 0.6959 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0002 | Val p-var 0.0003
+[Reptile*] Epoch 7/10 | Meta-loss 0.7020 | Val Loss 0.6958 | Train Acc 0.5000 | Val Acc 0.5104 | Train p-var 0.0002 | Val p-var 0.0003
+[Reptile*] Epoch 8/10 | Meta-loss 0.7013 | Val Loss 0.6957 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 9/10 | Meta-loss 0.7006 | Val Loss 0.6956 | Train Acc 0.5000 | Val Acc 0.5104 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 10/10 | Meta-loss 0.7000 | Val Loss 0.6956 | Train Acc 0.5000 | Val Acc 0.5104 | Train p-var 0.0003 | Val p-var 0.0002
+(6, 4, 'uniform') done 394s final val_acc=0.5104166666666666
+[Reptile*] Epoch 1/10 | Meta-loss 0.6956 | Val Loss 0.6911 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0006
+[Reptile*] Epoch 2/10 | Meta-loss 0.6949 | Val Loss 0.6911 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 3/10 | Meta-loss 0.6943 | Val Loss 0.6911 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 4/10 | Meta-loss 0.6938 | Val Loss 0.6910 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 5/10 | Meta-loss 0.6933 | Val Loss 0.6910 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 6/10 | Meta-loss 0.6929 | Val Loss 0.6910 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 7/10 | Meta-loss 0.6925 | Val Loss 0.6910 | Train Acc 0.5000 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 8/10 | Meta-loss 0.6921 | Val Loss 0.6909 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0005 | Val p-var 0.0004
+[Reptile*] Epoch 9/10 | Meta-loss 0.6918 | Val Loss 0.6909 | Train Acc 0.5069 | Val Acc 0.5625 | Train p-var 0.0005 | Val p-var 0.0004
+[Reptile*] Epoch 10/10 | Meta-loss 0.6915 | Val Loss 0.6909 | Train Acc 0.5208 | Val Acc 0.5625 | Train p-var 0.0005 | Val p-var 0.0004
+(6, 4, 'gaussian') done 383s final val_acc=0.5625
+[Q-MAML] Epoch 1/10 | Meta-loss 0.6912 | Val Loss 0.6911 | Train Acc 0.5000 | Val Acc 0.5000
+[Q-MAML] Epoch 2/10 | Meta-loss 0.6879 | Val Loss 0.6886 | Train Acc 0.5625 | Val Acc 0.5729
+[Q-MAML] Epoch 3/10 | Meta-loss 0.6809 | Val Loss 0.6858 | Train Acc 0.5833 | Val Acc 0.5312
+[Q-MAML] Epoch 4/10 | Meta-loss 0.6755 | Val Loss 0.6850 | Train Acc 0.5903 | Val Acc 0.5000
+[Q-MAML] Epoch 5/10 | Meta-loss 0.6722 | Val Loss 0.6841 | Train Acc 0.6181 | Val Acc 0.4792
+[Q-MAML] Epoch 6/10 | Meta-loss 0.6696 | Val Loss 0.6835 | Train Acc 0.6181 | Val Acc 0.5104
+[Q-MAML] Epoch 7/10 | Meta-loss 0.6673 | Val Loss 0.6831 | Train Acc 0.6111 | Val Acc 0.5104
+[Q-MAML] Epoch 8/10 | Meta-loss 0.6652 | Val Loss 0.6830 | Train Acc 0.6181 | Val Acc 0.5000
+[Q-MAML] Epoch 9/10 | Meta-loss 0.6631 | Val Loss 0.6830 | Train Acc 0.6250 | Val Acc 0.5104
+[Q-MAML] Epoch 10/10 | Meta-loss 0.6612 | Val Loss 0.6830 | Train Acc 0.6319 | Val Acc 0.5000
+(6, 4, 'qmaml_existing') done 354s final val_acc=0.5
+[Q-MAML-paper] Epoch 1/10 | Meta-loss 0.6866 | Val Loss 0.6783 | Train Acc 0.5694 | Val Acc 0.5938
+[Q-MAML-paper] Epoch 2/10 | Meta-loss 0.6349 | Val Loss 0.6746 | Train Acc 0.6806 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 3/10 | Meta-loss 0.5857 | Val Loss 0.6816 | Train Acc 0.7361 | Val Acc 0.5625
+[Q-MAML-paper] Epoch 4/10 | Meta-loss 0.5332 | Val Loss 0.7034 | Train Acc 0.7500 | Val Acc 0.5417
+[Q-MAML-paper] Epoch 5/10 | Meta-loss 0.4829 | Val Loss 0.7331 | Train Acc 0.7639 | Val Acc 0.5104
+[Q-MAML-paper] Epoch 6/10 | Meta-loss 0.4388 | Val Loss 0.7646 | Train Acc 0.7847 | Val Acc 0.5208
+[Q-MAML-paper] Epoch 7/10 | Meta-loss 0.3991 | Val Loss 0.7909 | Train Acc 0.8194 | Val Acc 0.5417
+[Q-MAML-paper] Epoch 8/10 | Meta-loss 0.3606 | Val Loss 0.8139 | Train Acc 0.8542 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 9/10 | Meta-loss 0.3228 | Val Loss 0.8388 | Train Acc 0.8889 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 10/10 | Meta-loss 0.2881 | Val Loss 0.8584 | Train Acc 0.8958 | Val Acc 0.5625
+(6, 4, 'qmaml_paper') done 180s final val_acc=0.5625
+[Reptile*] Epoch 1/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4722 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 2/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4722 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 3/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4792 | Val Acc 0.5208 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 4/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4792 | Val Acc 0.5208 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 5/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4792 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 6/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4861 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 7/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4792 | Val Acc 0.5208 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 8/10 | Meta-loss 0.6958 | Val Loss 0.6927 | Train Acc 0.4722 | Val Acc 0.5208 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 9/10 | Meta-loss 0.6957 | Val Loss 0.6927 | Train Acc 0.4722 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 10/10 | Meta-loss 0.6957 | Val Loss 0.6927 | Train Acc 0.4722 | Val Acc 0.5312 | Train p-var 0.0004 | Val p-var 0.0003
+(6, 5, 'zero') done 371s final val_acc=0.53125
+[Reptile*] Epoch 1/10 | Meta-loss 0.6997 | Val Loss 0.6960 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0006
+[Reptile*] Epoch 2/10 | Meta-loss 0.6990 | Val Loss 0.6959 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0006
+[Reptile*] Epoch 3/10 | Meta-loss 0.6984 | Val Loss 0.6958 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0005
+[Reptile*] Epoch 4/10 | Meta-loss 0.6978 | Val Loss 0.6957 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0005
+[Reptile*] Epoch 5/10 | Meta-loss 0.6973 | Val Loss 0.6956 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0005
+[Reptile*] Epoch 6/10 | Meta-loss 0.6969 | Val Loss 0.6955 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0004
+[Reptile*] Epoch 7/10 | Meta-loss 0.6965 | Val Loss 0.6955 | Train Acc 0.5000 | Val Acc 0.5000 | Train p-var 0.0003 | Val p-var 0.0004
+[Reptile*] Epoch 8/10 | Meta-loss 0.6961 | Val Loss 0.6954 | Train Acc 0.5000 | Val Acc 0.5104 | Train p-var 0.0003 | Val p-var 0.0004
+[Reptile*] Epoch 9/10 | Meta-loss 0.6958 | Val Loss 0.6953 | Train Acc 0.5000 | Val Acc 0.5208 | Train p-var 0.0003 | Val p-var 0.0004
+[Reptile*] Epoch 10/10 | Meta-loss 0.6955 | Val Loss 0.6953 | Train Acc 0.5000 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0004
+(6, 5, 'uniform') done 361s final val_acc=0.53125
+[Reptile*] Epoch 1/10 | Meta-loss 0.6936 | Val Loss 0.6944 | Train Acc 0.4792 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 2/10 | Meta-loss 0.6934 | Val Loss 0.6944 | Train Acc 0.4792 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 3/10 | Meta-loss 0.6934 | Val Loss 0.6944 | Train Acc 0.4653 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 4/10 | Meta-loss 0.6933 | Val Loss 0.6944 | Train Acc 0.4653 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[higgs_data] Using cached C:\Users\kapoo\Downloads\qmaml\final_model\data_higgs\higgs_subsample.csv (180000 rows).
+[Reptile*] Epoch 1/10 | Meta-loss 0.6936 | Val Loss 0.6944 | Train Acc 0.4792 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 2/10 | Meta-loss 0.6934 | Val Loss 0.6944 | Train Acc 0.4792 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 3/10 | Meta-loss 0.6934 | Val Loss 0.6944 | Train Acc 0.4653 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 4/10 | Meta-loss 0.6933 | Val Loss 0.6944 | Train Acc 0.4653 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 5/10 | Meta-loss 0.6932 | Val Loss 0.6944 | Train Acc 0.4722 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 6/10 | Meta-loss 0.6931 | Val Loss 0.6944 | Train Acc 0.4722 | Val Acc 0.4583 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 7/10 | Meta-loss 0.6931 | Val Loss 0.6944 | Train Acc 0.4722 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 8/10 | Meta-loss 0.6930 | Val Loss 0.6944 | Train Acc 0.4792 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 9/10 | Meta-loss 0.6930 | Val Loss 0.6945 | Train Acc 0.4861 | Val Acc 0.4688 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 10/10 | Meta-loss 0.6929 | Val Loss 0.6945 | Train Acc 0.4861 | Val Acc 0.4479 | Train p-var 0.0003 | Val p-var 0.0002
+(6, 5, 'gaussian') done 727s final val_acc=0.4479166666666667
+[Q-MAML] Epoch 1/10 | Meta-loss 0.6962 | Val Loss 0.6933 | Train Acc 0.4375 | Val Acc 0.5104
+[Q-MAML] Epoch 2/10 | Meta-loss 0.6955 | Val Loss 0.6931 | Train Acc 0.5000 | Val Acc 0.5000
+[Q-MAML] Epoch 3/10 | Meta-loss 0.6947 | Val Loss 0.6926 | Train Acc 0.5278 | Val Acc 0.5938
+[Q-MAML] Epoch 4/10 | Meta-loss 0.6935 | Val Loss 0.6920 | Train Acc 0.5486 | Val Acc 0.5625
+[Q-MAML] Epoch 5/10 | Meta-loss 0.6922 | Val Loss 0.6914 | Train Acc 0.5417 | Val Acc 0.5208
+[Q-MAML] Epoch 6/10 | Meta-loss 0.6914 | Val Loss 0.6913 | Train Acc 0.5625 | Val Acc 0.5417
+[Q-MAML] Epoch 7/10 | Meta-loss 0.6908 | Val Loss 0.6915 | Train Acc 0.5486 | Val Acc 0.5312
+[Q-MAML] Epoch 8/10 | Meta-loss 0.6905 | Val Loss 0.6918 | Train Acc 0.5069 | Val Acc 0.5208
+[Q-MAML] Epoch 9/10 | Meta-loss 0.6902 | Val Loss 0.6921 | Train Acc 0.4792 | Val Acc 0.5729
+[Q-MAML] Epoch 10/10 | Meta-loss 0.6900 | Val Loss 0.6924 | Train Acc 0.5347 | Val Acc 0.5208
+(6, 5, 'qmaml_existing') done 702s final val_acc=0.5208333333333334
+[Q-MAML-paper] Epoch 1/10 | Meta-loss 0.6926 | Val Loss 0.6839 | Train Acc 0.5556 | Val Acc 0.5729
+[Q-MAML-paper] Epoch 2/10 | Meta-loss 0.6464 | Val Loss 0.6788 | Train Acc 0.6528 | Val Acc 0.6042
+[Q-MAML-paper] Epoch 3/10 | Meta-loss 0.6028 | Val Loss 0.6714 | Train Acc 0.6944 | Val Acc 0.6250
+[Q-MAML-paper] Epoch 4/10 | Meta-loss 0.5572 | Val Loss 0.6737 | Train Acc 0.7361 | Val Acc 0.6146
+[Q-MAML-paper] Epoch 5/10 | Meta-loss 0.5131 | Val Loss 0.6876 | Train Acc 0.7847 | Val Acc 0.6146
+[Q-MAML-paper] Epoch 6/10 | Meta-loss 0.4714 | Val Loss 0.7004 | Train Acc 0.8125 | Val Acc 0.6250
+[Q-MAML-paper] Epoch 7/10 | Meta-loss 0.4340 | Val Loss 0.7292 | Train Acc 0.8403 | Val Acc 0.5938
+[Q-MAML-paper] Epoch 8/10 | Meta-loss 0.3967 | Val Loss 0.7642 | Train Acc 0.8681 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 9/10 | Meta-loss 0.3559 | Val Loss 0.8021 | Train Acc 0.8681 | Val Acc 0.5625
+[Q-MAML-paper] Epoch 10/10 | Meta-loss 0.3133 | Val Loss 0.8311 | Train Acc 0.8889 | Val Acc 0.5729
+(6, 5, 'qmaml_paper') done 315s final val_acc=0.5729166666666666
+[Reptile*] Epoch 1/10 | Meta-loss 0.7016 | Val Loss 0.6965 | Train Acc 0.4931 | Val Acc 0.4896 | Train p-var 0.0005 | Val p-var 0.0006
+[Reptile*] Epoch 2/10 | Meta-loss 0.7005 | Val Loss 0.6964 | Train Acc 0.4931 | Val Acc 0.4896 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 3/10 | Meta-loss 0.6995 | Val Loss 0.6963 | Train Acc 0.4931 | Val Acc 0.4896 | Train p-var 0.0005 | Val p-var 0.0005
+[Reptile*] Epoch 4/10 | Meta-loss 0.6986 | Val Loss 0.6962 | Train Acc 0.5000 | Val Acc 0.4792 | Train p-var 0.0004 | Val p-var 0.0005
+[Reptile*] Epoch 5/10 | Meta-loss 0.6979 | Val Loss 0.6961 | Train Acc 0.4931 | Val Acc 0.4792 | Train p-var 0.0004 | Val p-var 0.0004
+[Reptile*] Epoch 6/10 | Meta-loss 0.6972 | Val Loss 0.6960 | Train Acc 0.4931 | Val Acc 0.4792 | Train p-var 0.0004 | Val p-var 0.0004
+[Reptile*] Epoch 7/10 | Meta-loss 0.6966 | Val Loss 0.6959 | Train Acc 0.5000 | Val Acc 0.4896 | Train p-var 0.0004 | Val p-var 0.0004
+[Reptile*] Epoch 8/10 | Meta-loss 0.6961 | Val Loss 0.6958 | Train Acc 0.5000 | Val Acc 0.4896 | Train p-var 0.0004 | Val p-var 0.0004
+[Reptile*] Epoch 9/10 | Meta-loss 0.6956 | Val Loss 0.6958 | Train Acc 0.4931 | Val Acc 0.4896 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 10/10 | Meta-loss 0.6952 | Val Loss 0.6957 | Train Acc 0.5000 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+(6, 6, 'zero') done 488s final val_acc=0.46875
+[Reptile*] Epoch 1/10 | Meta-loss 0.6908 | Val Loss 0.6953 | Train Acc 0.5139 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 2/10 | Meta-loss 0.6905 | Val Loss 0.6953 | Train Acc 0.5139 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 3/10 | Meta-loss 0.6902 | Val Loss 0.6952 | Train Acc 0.5139 | Val Acc 0.4792 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 4/10 | Meta-loss 0.6900 | Val Loss 0.6952 | Train Acc 0.5139 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 5/10 | Meta-loss 0.6898 | Val Loss 0.6952 | Train Acc 0.5139 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 6/10 | Meta-loss 0.6896 | Val Loss 0.6951 | Train Acc 0.5139 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 7/10 | Meta-loss 0.6894 | Val Loss 0.6951 | Train Acc 0.5278 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 8/10 | Meta-loss 0.6893 | Val Loss 0.6951 | Train Acc 0.5347 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 9/10 | Meta-loss 0.6891 | Val Loss 0.6950 | Train Acc 0.5417 | Val Acc 0.4792 | Train p-var 0.0004 | Val p-var 0.0003
+[Reptile*] Epoch 10/10 | Meta-loss 0.6890 | Val Loss 0.6950 | Train Acc 0.5417 | Val Acc 0.4688 | Train p-var 0.0004 | Val p-var 0.0003
+(6, 6, 'uniform') done 847s final val_acc=0.46875
+[Reptile*] Epoch 1/10 | Meta-loss 0.6908 | Val Loss 0.6963 | Train Acc 0.5278 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 2/10 | Meta-loss 0.6907 | Val Loss 0.6963 | Train Acc 0.5347 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 3/10 | Meta-loss 0.6907 | Val Loss 0.6963 | Train Acc 0.5208 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 4/10 | Meta-loss 0.6907 | Val Loss 0.6963 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 5/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 6/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 7/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 8/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 9/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5069 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 10/10 | Meta-loss 0.6907 | Val Loss 0.6962 | Train Acc 0.5000 | Val Acc 0.4375 | Train p-var 0.0003 | Val p-var 0.0002
+(6, 6, 'gaussian') done 986s final val_acc=0.4375
+[Q-MAML] Epoch 1/10 | Meta-loss 0.7086 | Val Loss 0.6983 | Train Acc 0.4861 | Val Acc 0.5000
+[Q-MAML] Epoch 2/10 | Meta-loss 0.6927 | Val Loss 0.6945 | Train Acc 0.5278 | Val Acc 0.4479
+[Q-MAML] Epoch 3/10 | Meta-loss 0.6910 | Val Loss 0.6945 | Train Acc 0.5139 | Val Acc 0.5104
+[Q-MAML] Epoch 4/10 | Meta-loss 0.6893 | Val Loss 0.6942 | Train Acc 0.5694 | Val Acc 0.5208
+[Q-MAML] Epoch 5/10 | Meta-loss 0.6880 | Val Loss 0.6943 | Train Acc 0.5764 | Val Acc 0.5208
+[Q-MAML] Epoch 6/10 | Meta-loss 0.6870 | Val Loss 0.6943 | Train Acc 0.5556 | Val Acc 0.5312
+[Q-MAML] Epoch 7/10 | Meta-loss 0.6863 | Val Loss 0.6947 | Train Acc 0.5833 | Val Acc 0.5104
+[Q-MAML] Epoch 8/10 | Meta-loss 0.6859 | Val Loss 0.6956 | Train Acc 0.5694 | Val Acc 0.5208
+[Q-MAML] Epoch 9/10 | Meta-loss 0.6859 | Val Loss 0.6967 | Train Acc 0.5556 | Val Acc 0.5104
+[Q-MAML] Epoch 10/10 | Meta-loss 0.6860 | Val Loss 0.6965 | Train Acc 0.5208 | Val Acc 0.5104
+(6, 6, 'qmaml_existing') done 855s final val_acc=0.5104166666666666
+[Q-MAML-paper] Epoch 1/10 | Meta-loss 0.7000 | Val Loss 0.6962 | Train Acc 0.5278 | Val Acc 0.4896
+[Q-MAML-paper] Epoch 2/10 | Meta-loss 0.6813 | Val Loss 0.6916 | Train Acc 0.5694 | Val Acc 0.5208
+[Q-MAML-paper] Epoch 3/10 | Meta-loss 0.6630 | Val Loss 0.6974 | Train Acc 0.6806 | Val Acc 0.5104
+[Q-MAML-paper] Epoch 4/10 | Meta-loss 0.6307 | Val Loss 0.7032 | Train Acc 0.7292 | Val Acc 0.5208
+[Q-MAML-paper] Epoch 5/10 | Meta-loss 0.5822 | Val Loss 0.7177 | Train Acc 0.7500 | Val Acc 0.5312
+[Q-MAML-paper] Epoch 6/10 | Meta-loss 0.5249 | Val Loss 0.7401 | Train Acc 0.7847 | Val Acc 0.5521
+[Q-MAML-paper] Epoch 7/10 | Meta-loss 0.4638 | Val Loss 0.7671 | Train Acc 0.8125 | Val Acc 0.5729
+[Q-MAML-paper] Epoch 8/10 | Meta-loss 0.4030 | Val Loss 0.7958 | Train Acc 0.8472 | Val Acc 0.5625
+[Q-MAML-paper] Epoch 9/10 | Meta-loss 0.3445 | Val Loss 0.8341 | Train Acc 0.8611 | Val Acc 0.5729
+[Q-MAML-paper] Epoch 10/10 | Meta-loss 0.2915 | Val Loss 0.8728 | Train Acc 0.9097 | Val Acc 0.5625
+(6, 6, 'qmaml_paper') done 178s final val_acc=0.5625
+[Reptile*] Epoch 1/10 | Meta-loss 0.7286 | Val Loss 0.7025 | Train Acc 0.4931 | Val Acc 0.4583 | Train p-var 0.0009 | Val p-var 0.0015
+[Reptile*] Epoch 2/10 | Meta-loss 0.7250 | Val Loss 0.7022 | Train Acc 0.5000 | Val Acc 0.4583 | Train p-var 0.0009 | Val p-var 0.0014
+[Reptile*] Epoch 3/10 | Meta-loss 0.7218 | Val Loss 0.7019 | Train Acc 0.5000 | Val Acc 0.4583 | Train p-var 0.0009 | Val p-var 0.0013
+[Reptile*] Epoch 4/10 | Meta-loss 0.7189 | Val Loss 0.7017 | Train Acc 0.5000 | Val Acc 0.4583 | Train p-var 0.0008 | Val p-var 0.0012
+[Reptile*] Epoch 5/10 | Meta-loss 0.7164 | Val Loss 0.7014 | Train Acc 0.5000 | Val Acc 0.4375 | Train p-var 0.0008 | Val p-var 0.0011
+[Reptile*] Epoch 6/10 | Meta-loss 0.7142 | Val Loss 0.7012 | Train Acc 0.4931 | Val Acc 0.4375 | Train p-var 0.0008 | Val p-var 0.0010
+[Reptile*] Epoch 7/10 | Meta-loss 0.7122 | Val Loss 0.7010 | Train Acc 0.4931 | Val Acc 0.4375 | Train p-var 0.0008 | Val p-var 0.0010
+[Reptile*] Epoch 8/10 | Meta-loss 0.7104 | Val Loss 0.7009 | Train Acc 0.4931 | Val Acc 0.4271 | Train p-var 0.0008 | Val p-var 0.0009
+[Reptile*] Epoch 9/10 | Meta-loss 0.7089 | Val Loss 0.7007 | Train Acc 0.4931 | Val Acc 0.4271 | Train p-var 0.0008 | Val p-var 0.0009
+[Reptile*] Epoch 10/10 | Meta-loss 0.7075 | Val Loss 0.7006 | Train Acc 0.4931 | Val Acc 0.4375 | Train p-var 0.0008 | Val p-var 0.0008
+(6, 7, 'zero') done 396s final val_acc=0.4375
+[Reptile*] Epoch 1/10 | Meta-loss 0.6944 | Val Loss 0.6903 | Train Acc 0.5208 | Val Acc 0.5625 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 2/10 | Meta-loss 0.6943 | Val Loss 0.6903 | Train Acc 0.5208 | Val Acc 0.5625 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 3/10 | Meta-loss 0.6942 | Val Loss 0.6903 | Train Acc 0.5139 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 4/10 | Meta-loss 0.6942 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 5/10 | Meta-loss 0.6941 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 6/10 | Meta-loss 0.6941 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 7/10 | Meta-loss 0.6940 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 8/10 | Meta-loss 0.6940 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5521 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 9/10 | Meta-loss 0.6939 | Val Loss 0.6903 | Train Acc 0.5139 | Val Acc 0.5625 | Train p-var 0.0018 | Val p-var 0.0015
+[Reptile*] Epoch 10/10 | Meta-loss 0.6939 | Val Loss 0.6903 | Train Acc 0.5069 | Val Acc 0.5625 | Train p-var 0.0017 | Val p-var 0.0015
+(6, 7, 'uniform') done 344s final val_acc=0.5625
+[Reptile*] Epoch 1/10 | Meta-loss 0.6936 | Val Loss 0.6930 | Train Acc 0.5069 | Val Acc 0.5208 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 2/10 | Meta-loss 0.6933 | Val Loss 0.6930 | Train Acc 0.5069 | Val Acc 0.5208 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 3/10 | Meta-loss 0.6930 | Val Loss 0.6930 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 4/10 | Meta-loss 0.6928 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 5/10 | Meta-loss 0.6926 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 6/10 | Meta-loss 0.6924 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 7/10 | Meta-loss 0.6923 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 8/10 | Meta-loss 0.6921 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 9/10 | Meta-loss 0.6920 | Val Loss 0.6929 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+[Reptile*] Epoch 10/10 | Meta-loss 0.6919 | Val Loss 0.6928 | Train Acc 0.5069 | Val Acc 0.5312 | Train p-var 0.0003 | Val p-var 0.0002
+(6, 7, 'gaussian') done 321s final val_acc=0.53125
+[Q-MAML] Epoch 1/10 | Meta-loss 0.7624 | Val Loss 0.7062 | Train Acc 0.4931 | Val Acc 0.4479
+[Q-MAML] Epoch 2/10 | Meta-loss 0.6984 | Val Loss 0.7063 | Train Acc 0.5139 | Val Acc 0.4375
+[Q-MAML] Epoch 3/10 | Meta-loss 0.6959 | Val Loss 0.7050 | Train Acc 0.5208 | Val Acc 0.4375
+[Q-MAML] Epoch 4/10 | Meta-loss 0.6930 | Val Loss 0.7050 | Train Acc 0.5139 | Val Acc 0.3854
+[Q-MAML] Epoch 5/10 | Meta-loss 0.6918 | Val Loss 0.7045 | Train Acc 0.4931 | Val Acc 0.3542
+[Q-MAML] Epoch 6/10 | Meta-loss 0.6902 | Val Loss 0.7033 | Train Acc 0.5000 | Val Acc 0.4062
+[Q-MAML] Epoch 7/10 | Meta-loss 0.6885 | Val Loss 0.7021 | Train Acc 0.5278 | Val Acc 0.4062
+[Q-MAML] Epoch 8/10 | Meta-loss 0.6869 | Val Loss 0.7012 | Train Acc 0.5139 | Val Acc 0.4271
+[Q-MAML] Epoch 9/10 | Meta-loss 0.6853 | Val Loss 0.7009 | Train Acc 0.5208 | Val Acc 0.4375
+[Q-MAML] Epoch 10/10 | Meta-loss 0.6838 | Val Loss 0.7009 | Train Acc 0.5208 | Val Acc 0.4688
+(6, 7, 'qmaml_existing') done 287s final val_acc=0.46875
+[Q-MAML-paper] Epoch 1/10 | Meta-loss 0.7290 | Val Loss 0.7029 | Train Acc 0.4861 | Val Acc 0.5104
+[Q-MAML-paper] Epoch 2/10 | Meta-loss 0.6629 | Val Loss 0.7070 | Train Acc 0.6111 | Val Acc 0.5104
+[Q-MAML-paper] Epoch 3/10 | Meta-loss 0.6212 | Val Loss 0.7190 | Train Acc 0.6528 | Val Acc 0.5000
+[Q-MAML-paper] Epoch 4/10 | Meta-loss 0.5803 | Val Loss 0.7298 | Train Acc 0.6806 | Val Acc 0.5312
+[Q-MAML-paper] Epoch 5/10 | Meta-loss 0.5417 | Val Loss 0.7457 | Train Acc 0.6944 | Val Acc 0.5625
+[Q-MAML-paper] Epoch 6/10 | Meta-loss 0.5013 | Val Loss 0.7580 | Train Acc 0.7292 | Val Acc 0.5521
+[Q-MAML-paper] Epoch 7/10 | Meta-loss 0.4592 | Val Loss 0.7781 | Train Acc 0.7917 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 8/10 | Meta-loss 0.4157 | Val Loss 0.8042 | Train Acc 0.8194 | Val Acc 0.5833
+[Q-MAML-paper] Epoch 9/10 | Meta-loss 0.3710 | Val Loss 0.8362 | Train Acc 0.8472 | Val Acc 0.5938
+[Q-MAML-paper] Epoch 10/10 | Meta-loss 0.3260 | Val Loss 0.8702 | Train Acc 0.8819 | Val Acc 0.5833
+(6, 7, 'qmaml_paper') done 142s final val_acc=0.5833333333333334
+HIGGSEXTRA DONE 6

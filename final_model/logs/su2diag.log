@@ -1,0 +1,16 @@
+[SU2LGT pretrain] epoch 1/40  meanE=4.5335  gradnorm=3.9833
+[SU2LGT pretrain] epoch 40/40  meanE=4.9297  gradnorm=6.5015
+[SU2LGT pretrain] epoch 1/100  meanE=3.5743  gradnorm=5.1371
+[SU2LGT pretrain] epoch 100/100  meanE=0.6907  gradnorm=2.0160
+seed 0 saved
+[SU2LGT pretrain] epoch 1/40  meanE=4.3348  gradnorm=3.7118
+[SU2LGT pretrain] epoch 40/40  meanE=-0.2695  gradnorm=1.2437
+[SU2LGT pretrain] epoch 1/100  meanE=3.7210  gradnorm=3.5415
+[SU2LGT pretrain] epoch 100/100  meanE=-0.2662  gradnorm=1.9588
+seed 1 saved
+[SU2LGT pretrain] epoch 1/40  meanE=3.8775  gradnorm=3.0449
+[SU2LGT pretrain] epoch 40/40  meanE=0.9573  gradnorm=0.4113
+[SU2LGT pretrain] epoch 1/100  meanE=3.3330  gradnorm=2.7458
+[SU2LGT pretrain] epoch 100/100  meanE=0.9472  gradnorm=0.3892
+seed 2 saved
+DIAG DONE
